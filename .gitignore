@@ -143,5 +143,8 @@ pdf_info_extractor/data_somef/*
 
 #Idea file
 corpus_to_download.txt
+output/*
+processed_metadata.json
+test/pipeline_folder/*
 .idea
 .DS_Store

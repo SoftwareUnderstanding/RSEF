@@ -26,10 +26,10 @@ def _get_identifier(paper):
     if not paper:
         logging.error("Paper Object is None")
         return None
-    # if iden := paper.doi:
-    #     return iden
-    elif iden := paper.arxiv:
-        return iden
+    if paper.doi and paper.doi is not "0":
+        return paper.doi
+    elif paper.arxiv:
+        return paper.arxiv
     else:
         logging.error("Paper Object Has no identifier to use")
         return None
@@ -37,7 +37,6 @@ def _get_identifier(paper):
 
 def check_paper_directionality(paper, directionality, output_dir):
     result = {}
-
 
     if not (iden := _get_identifier(paper)):
         logging.error("check_paper_directionality: No identifier found for this paper")
@@ -68,10 +67,8 @@ def check_paper_directionality(paper, directionality, output_dir):
 
 
 def _zenodo_check_directionality(paper, zenodo_urls, directionality, iden, first_time, result, output_dir):
-
     is_unidir = None
     is_bidir = None
-
 
     for entry in zenodo_urls:
         url = safe_dic(entry, "url")
@@ -81,7 +78,7 @@ def _zenodo_check_directionality(paper, zenodo_urls, directionality, iden, first
             is_bidir = zenodo_is_it_bidir(paper_obj=paper, zenodo_url=url, output_dir=output_dir)
 
         else:
-            #TODO unidir
+            # TODO unidir
             continue
         if is_bidir:
             if first_time:
@@ -98,7 +95,6 @@ def _zenodo_check_directionality(paper, zenodo_urls, directionality, iden, first
 
 
 def _git_check_directionality(paper, git_urls, directionality, iden, first_time, output_dir, result):
-
     is_unidir = None
     is_bidir = None
 
@@ -132,6 +128,7 @@ def _git_check_directionality(paper, git_urls, directionality, iden, first_time,
                 first_time = False
             result[iden].append(url)
     return
+
 
 def safe_dic(dict, key):
     try:
