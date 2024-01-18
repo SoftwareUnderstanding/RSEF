@@ -142,5 +142,6 @@ apis/**/*.json
 pdf_info_extractor/data_somef/*
 
 #Idea file
+corpus_to_download.txt
 .idea
 .DS_Store
