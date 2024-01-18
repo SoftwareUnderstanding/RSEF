@@ -39,10 +39,10 @@ def is_it_bidir(paper_obj, repo_json):
         found_bidir = is_arxiv_bidir(arxiv, repo_data)
         if found_bidir:
             bidir_locations.extend(found_bidir)
-    # if title := paper_obj.title:
-    #     found_bidir = is_title_bidir(title, repo_data)
-    #     if found_bidir:
-    #         bidir_locations.extend(found_bidir)
+    if title := paper_obj.title:
+        found_bidir = is_title_bidir(title, repo_data)
+        if found_bidir:
+            bidir_locations.extend(found_bidir)
     return bidir_locations
 
 # ======================================================================================================================

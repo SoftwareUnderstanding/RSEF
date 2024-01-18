@@ -48,8 +48,8 @@ def check_paper_directionality(paper, directionality, output_dir):
             return None
 
         # Check for zenodo directionality
-        # zenodo_urls = pp_urls.get("zenodo", [])
-        # _zenodo_check_directionality(paper, zenodo_urls, directionality, iden, first_time, result, output_dir)
+        zenodo_urls = pp_urls.get("zenodo", [])
+        _zenodo_check_directionality(paper, zenodo_urls, directionality, iden, first_time, result, output_dir)
 
         # Check for git urls
         git_urls = pp_urls.get("git", [])

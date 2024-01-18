@@ -4,13 +4,14 @@ from pathlib import Path
 from shutil import rmtree
 from unittest import TestCase
 
-#from ..modelling.bidirectionality import *
+# from ..modelling.bidirectionality import *
 from src.RSEF.object_creator.paper_to_directionality import check_paper_directionality
 from src.RSEF.object_creator.pipeline import doi_to_paper
 from src.RSEF.object_creator.paper_obj_utils import paperDict_to_paperObj
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 PIPELINE_FOLDER = os.path.join(TEST_DIR, "pipeline_folder")
+
 
 def wipe_directory(directory_path):
     for path in Path(directory_path).glob("**/*"):
@@ -19,13 +20,15 @@ def wipe_directory(directory_path):
         elif path.is_dir():
             rmtree(path)
 
+
 def load_json(path):
-    with open(path,'r') as f:
+    with open(path, 'r') as f:
         return json.load(f)
 
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#-------------------------------------------------Directionality Testing------------------------------------------------
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# -------------------------------------------------Directionality Testing------------------------------------------------
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 class test_bidir(TestCase):
@@ -98,7 +101,7 @@ class test_bidir(TestCase):
         doi = "10.1109/iwis56333.2022.9920762"
         paper = doi_to_paper(doi, "pipeline_folder")
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
-        #self.assertIsNone(result)
+        # self.assertIsNone(result)
 
     def test_doi_pipeline5(self):
         # FAILS DUE TO SOMEF, DOES NOT EXTRACT
@@ -110,8 +113,8 @@ class test_bidir(TestCase):
         self.assertEquals(result[doi][0]["url"], expected_result)
 
     def test_doi_pipeline6(self):
-        #TODO
-        #fails due to pointing to a new version of arxiv. Has a new ID
+        # TODO
+        # fails due to pointing to a new version of arxiv. Has a new ID
         wipe_directory(PIPELINE_FOLDER)
         doi = "10.1007/978-3-319-26123-2_24"
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
@@ -138,7 +141,7 @@ class test_bidir(TestCase):
 
     def test_arxiv_1(self):
         '''Test to download first OA the best pdf has 403 forbidden'''
-        #wipe_directory(PIPELINE_FOLDER)
+        # wipe_directory(PIPELINE_FOLDER)
         doi = "10.1109/iccv48922.2021.00338"
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
@@ -232,7 +235,7 @@ class test_bidir(TestCase):
         # self.assertTrue(expected_result in result[doi])
 
     # def test_title(self):
-    #     from ..object_creator.paper_obj_utils import paperDict_to_paperObj
+    #     from src.RSEF.object_creator.paper_obj_utils import paperDict_to_paperObj
     #     wipe_directory(PIPELINE_FOLDER)
     #     pp_dict = {
     #         "doi": "https://doi.org/10.48550/arXiv.2307.10793",
@@ -243,7 +246,7 @@ class test_bidir(TestCase):
     #         "urls": [("https://github.com/patwdj/java-compiler-error-help",1)]
     #     }
     #     paper = paperDict_to_paperObj(pp_dict)
-    #     result = check_paper_directionality(paper,True,PIPELINE_FOLDER)
+    #     result = check_paper_directionality(paper,True, PIPELINE_FOLDER)
     #     print(result)
 
     def test_title1(self):
@@ -276,7 +279,6 @@ class test_bidir(TestCase):
         expected_result = "https://zenodo.org/records/7867989"
         self.assertEquals(expected_result, result["1234.56789"][0]["url"])
 
-
     def test_zenodo_bidir_wrong_url(self):
         wipe_directory(PIPELINE_FOLDER)
         pp_dict = {
@@ -290,7 +292,6 @@ class test_bidir(TestCase):
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         self.assertIsNone(result)
-
 
     def test_zenodo_bidir_no_url(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -320,7 +321,6 @@ class test_bidir(TestCase):
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         self.assertIsNone(result)
-
 
     def test_zenodo_bidir_broken_url_1(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -361,21 +361,21 @@ class test_bidir(TestCase):
             "file_path": "./output_files/1508.02911/1508.02911.pdf",
             "title": "Exoplanet Transmission Spectroscopy using KMOS",
             "urls": {
-                    "git": [
-                            {
-                                "#_appearances": 1,
-                                "url": "https://github.com/hpparvi/PyTransit"
-                            },
-                            {
-                                "#_appearances": 1,
-                                "url": "https://github.com/hpparvi/PyDE"
-                            }
-                    ]
+                "git": [
+                    {
+                        "#_appearances": 1,
+                        "url": "https://github.com/hpparvi/PyTransit"
+                    },
+                    {
+                        "#_appearances": 1,
+                        "url": "https://github.com/hpparvi/PyDE"
                     }
+                ]
+            }
         }
         pp = paperDict_to_paperObj(paper)
-        #result = check_paper_directionality(pp, True, PIPELINE_FOLDER)
-        #print(result)
+        # result = check_paper_directionality(pp, True, PIPELINE_FOLDER)
+        # print(result)
+
     def test_related_4(self):
         wipe_directory(PIPELINE_FOLDER)
-
