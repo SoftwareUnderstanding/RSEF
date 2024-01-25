@@ -76,30 +76,6 @@ Commands:
  
 ```
 
-### Assess
-
-The assess command allows for a user to determine whether a given Identifier, in this case ArXiv or DOI,  is bidirectional or not.
-
-The command allows for the user to input a single DOI/ArXiv, a list of identifiers given as a ```.txt```, or a ```processed_metadata.json``` 
-
-
-```text
-rsef assess -h
-Usage: sskg assess [OPTIONS]
-
-Options:
-
--i, --input <name> DOI, path to .txt list of DOIs or path to processed_metadata.json [required]
-
--o, --output <path>  Output csv file  [default: output]
-
--U, --unidir Unidirectionality
-
--B, --bidir  Bidirectionality
-
--h, --help Show this message and exit.
-```
-
 ### Download
 
 The download command allows for a user to download the pdf with its metadata given an Identifier: ArXiv or DOI.  Alongside the PDFs folder there will be a `download_metadata.json` which will have the Title, DOI, ArXiv and filename/filepath for each paper downloaded.
@@ -132,10 +108,34 @@ Options:
 -h, --help Show this message and exit.
 ```
 
+### Assess
+
+The assess command allows for a user to determine whether a given Identifier, in this case ArXiv or DOI,  is bidirectional or not.
+
+The command allows for the user to input a single DOI/ArXiv, a list of identifiers given as a ```.txt```, or a ```processed_metadata.json``` 
 
 
+```text
+rsef assess -h
+Usage: sskg assess [OPTIONS]
 
-### The repository is divided into the following directories:
+Options:
+
+-i, --input <name> DOI, path to .txt list of DOIs or path to processed_metadata.json [required]
+
+-o, --output <path>  Output csv file  [default: output]
+
+-U, --unidir Unidirectionality
+
+-B, --bidir  Bidirectionality
+
+-h, --help Show this message and exit.
+```
+
+## Structure
+
+
+The src/RSEF is divided into the following directories:
 
 1. Download_pdf
 
@@ -219,7 +219,29 @@ For assessment of the program against its corpus. The corpus can be found within
 ## Tests
 
 Tests can be found in the `./tests` folder
+
+## Evaluation
+
+This software has been evaluate it with a corpus created expressly.
+
+This corpus, composed by 154 papers-repositories, includes  several types of bi-directionality paper-repository links (e.g., repositories including just the title, Arxiv URLs or DOIs in the README file, using citation files, repositories in different code platforms, etc.)
+
+Two annotators were selected to manually annotate the presence of bi-directionality. In case of two different annotations in the corpus, a third annotator decided the final value.
+
+This corpus, in TSV format, can be found in the evaluation/bidirectional folder.
+
+In case you want to run the evaluation, you will have to use the script presents in the evaluation_only_ids folder.
   
+```text
+python eval_corpus_big.py
+```
+
+A file name output_metrics.json will be generated with the results of the evaluation. You can find the common metrics precision, recall, f1-score and the list of false negatives.
+
+The results of the pipeline evaluation using our corpus are:
+**precision:** 1.0
+**recall:** 0.918918918918919
+**f1-score:** 0.9577464788732395
 
 ## License
 
