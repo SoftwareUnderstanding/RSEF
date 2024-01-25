@@ -228,7 +228,9 @@ This corpus, composed by 154 papers-repositories, includes  several types of bi-
 
 Two annotators were selected to manually annotate the presence of bi-directionality. In case of two different annotations in the corpus, a third annotator decided the final value.
 
-This corpus, in TSV format, can be found in the evaluation/bidirectional folder.
+This corpus, in TSV format, can be found in the [evaluation/bidirectional folder](https://github.com/SoftwareUnderstanding/RSEF/blob/main/evaluation/bidirectional/corpus.tsv).
+
+The RAW version of the corpus can be found [here](https://github.com/SoftwareUnderstanding/RSEF/blob/main/evaluation/bidirectional/corpus_arxiv_bidirectional_12_23.xlsx).
 
 In case you want to run the evaluation, you will have to use the script presents in the evaluation_only_ids folder.
   
@@ -236,9 +238,9 @@ In case you want to run the evaluation, you will have to use the script presents
 python eval_corpus_big.py
 ```
 
-A file name output_metrics.json will be generated with the results of the evaluation. You can find the common metrics precision, recall, f1-score and the list of false negatives.
+A file name **output_metrics.json** will be generated with the results of the evaluation. You can find metrics such as precision, recall, f1-score and the list of false negatives.
 
-The results of the pipeline evaluation using our corpus are:
+The results of the evaluation using our corpus are:
 **precision:** 1.0
 **recall:** 0.918918918918919
 **f1-score:** 0.9577464788732395
