@@ -16,6 +16,7 @@ def str_to_arxivID(string):
 def calculate_metrics(json_path, tsv_path, output_path):
     # Read Corpus TSV
     tsv_data = pd.read_csv(tsv_path, dtype=str, sep='\t')
+    print (tsv_data['ID_is_Bidirectional'])
 
     with open(json_path, 'r') as f:
         json_data = json.load(f)
@@ -32,7 +33,7 @@ def calculate_metrics(json_path, tsv_path, output_path):
         if corp_arxiv is None:
             continue
         
-        prediction = row['BiDirectional_ids'] == 'TRUE'  # Assuming the value in TSV is 'True' or 'False'
+        prediction = row['ID_is_Bidirectional'] == 'TRUE'  # Assuming the value in TSV is 'True' or 'False'
         if corp_arxiv == "2006.09044":
             print(prediction)
         # Check against JSON data
