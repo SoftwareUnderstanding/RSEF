@@ -245,6 +245,22 @@ The results of the evaluation using our corpus are:
 **recall:** 0.918918918918919
 **f1-score:** 0.9577464788732395
 
+## Cite RSEF
+Please refer to our Mining Software Repositories 2024 paper:
+```
+@InProceedings{garijo_2024_bidirectional,
+    author="Garijo, Daniel and Arroyo, Miguel and Gonzalez, Esteban and Treude, Christoph and Tarocco, Nicola",
+    title="Bidirectional Paper-Repository Tracing in Software Engineering",
+    booktitle="21st International Conference on Mining Software Repositories",
+    year="2024",
+    publisher="ACM",
+    address="Cham",
+    doi="10.1145/3643991.3644876",
+    url= {https://dgarijo.com/papers/msr_2024.pdf}
+}
+
+```
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).  
