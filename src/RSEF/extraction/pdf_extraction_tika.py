@@ -42,10 +42,10 @@ def raw_to_list(raw_pdf_data: str) -> list:
     return [x for x in list_pdf_data if x != '']
 
 
-def read_pdf_list(pdf_path) -> list:
+def read_pdf_list(pdf_path, splitter='\n') -> list:
     try:
         raw = parser.from_file(pdf_path)
-        list_pdf_data = raw['content'].split('\n')
+        list_pdf_data = raw['content'].split(splitter)
         # delete empty lines
         list_pdf_data = [x for x in list_pdf_data if x != '']
 
