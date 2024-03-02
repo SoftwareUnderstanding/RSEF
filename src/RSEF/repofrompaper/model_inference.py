@@ -1,11 +1,11 @@
-from RSEF.repofrompaper.rfp import model, tokenizer
 from torch.nn.functional import softmax
 from heapq import heappush, heappop
+from . import model, tokenizer
 from typing import List
 import re
 
 def get_top_sentences(sentences: List[str], top_k: int = 5) -> List[str]:
-    ''''Find the top k sentences from the given list of sentences using the model.'''
+    """'Find the top k sentences from the given list of sentences using the model."""
     top_sentences = []  # Using a min heap to efficiently keep track of top sentences
 
     for sentence in sentences:
@@ -35,4 +35,3 @@ def get_top_sentences(sentences: List[str], top_k: int = 5) -> List[str]:
         top_sentences, key=lambda x: x[0], reverse=True)]
 
     return sorted_sentences
-

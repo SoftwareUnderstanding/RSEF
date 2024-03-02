@@ -32,20 +32,20 @@ def raw_read_pdf(pdf_path) -> str:
         return ""
 
 
-def raw_to_list(raw_pdf_data: str) -> list:
+def raw_to_list(raw_pdf_data: str, splitter='\n') -> list:
 
     if not raw_pdf_data:
         logging.error(f"ERROR converting from raw pdf to list pdf, {raw_pdf_data}")
         return []
 
-    list_pdf_data = raw_pdf_data.split('\n')
+    list_pdf_data = raw_pdf_data.split(splitter)
     return [x for x in list_pdf_data if x != '']
 
 
-def read_pdf_list(pdf_path, splitter='\n') -> list:
+def read_pdf_list(pdf_path) -> list:
     try:
         raw = parser.from_file(pdf_path)
-        list_pdf_data = raw['content'].split(splitter)
+        list_pdf_data = raw['content'].split('\n')
         # delete empty lines
         list_pdf_data = [x for x in list_pdf_data if x != '']
 

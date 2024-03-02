@@ -2,7 +2,7 @@ import re
 
 
 def clean_final_link(link: str) -> str:
-    '''Clean the link by removing trailing dots and .git from the end of the link and removing spaces from the link.'''
+    """Clean the link by removing trailing dots and .git from the end of the link and removing spaces from the link."""
     if not link:
         return link
 
@@ -19,7 +19,7 @@ def clean_final_link(link: str) -> str:
 
 
 def clean_final_sentence(sentence: str) -> str:
-    '''Cleans the sentence to allow better inference.'''
+    """Cleans the sentence to allow better inference."""
     # Remove newline characters
     sentence = sentence.replace('\n', ' ')
 

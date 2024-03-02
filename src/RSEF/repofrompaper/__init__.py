@@ -1,5 +1,5 @@
 from transformers import RobertaForSequenceClassification, RobertaTokenizer
-from RSEF.repofrompaper.utils.constants import MODEL_PATH, TOKENIZER_PATH
+from .utils.constants import MODEL_PATH, TOKENIZER_PATH
 
 # Model Loading
 model = RobertaForSequenceClassification.from_pretrained(MODEL_PATH)

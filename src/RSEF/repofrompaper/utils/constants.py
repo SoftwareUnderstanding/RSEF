@@ -5,7 +5,6 @@ GITLAB_REGEX = r'(?:https?://(?:www\.)?)?gitlab\.com/[a-zA-Z0-9_.-]+/[a-zA-Z0-9_
 REPO_REGEXES = [GITHUB_REGEX, GITLAB_REGEX]
 
 # Paths
-CORPUS_PATH = '../../Corpus/Test/'
 MODEL_PATH = 'oeg/RoBERTa-Repository-Proposal'
 TOKENIZER_PATH = 'roberta-base'
 

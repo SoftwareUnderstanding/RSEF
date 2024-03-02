@@ -1,7 +1,7 @@
 from ..utils.regex import str_to_doiID, str_to_arxivID
 
 class PaperObj:
-    def __init__(self, title, urls, doi, arxiv, abstract, file_name, file_path):
+    def __init__(self, title, urls, doi, arxiv, abstract, file_name, file_path, proposal_url = None):
         self._title = title
         self._urls = urls
         self._doi = str_to_doiID(doi)
@@ -9,6 +9,7 @@ class PaperObj:
         self._file_name = file_name
         self._file_path = file_path
         self._abstract = abstract
+        self._proposal_url = proposal_url
 
     @property
     def title(self):
@@ -25,6 +26,14 @@ class PaperObj:
     @urls.setter
     def urls(self, value):
         self._urls = value
+
+    @property
+    def proposal_url(self):
+        return self._proposal_url
+
+    @proposal_url.setter
+    def proposal_url(self, value):
+        self._proposal_url = value
 
     @property
     def abstract(self):

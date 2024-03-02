@@ -1,15 +1,15 @@
-from RSEF.repofrompaper.utils.constants import CORPUS_PATH, FOOTNOTE_NUM_LIMIT
-from RSEF.repofrompaper.utils.helpers import clean_final_link
-import RSEF.repofrompaper.rfp.link_search as ls
+from .link_search import get_sentences_with_footnote, find_link_in_footnotes, find_link_in_references, find_link_in_sentences, find_repo_links
+from .utils.constants import FOOTNOTE_NUM_LIMIT
 from .sentence_extraction import get_sentences
 from .model_inference import get_top_sentences
+from .utils.helpers import clean_final_link
 from typing import List, Tuple
 import re
 
-def extract_repo_links_from_pdf(pdf_path: str) -> Tuple[List[str], str]:
-    '''Extract the top sentences from the pdf and find the link'''
+def extract_repo_links_from_pdf(pdf_list: list) -> Tuple[List[str], str]:
+    """Extract the top sentences from the pdf and find the link"""
     # Get all sentences, footnotes and references from the pdf-to-text
-    references, footnotes, sentences = get_sentences(CORPUS_PATH + pdf_path)
+    references, footnotes, sentences = get_sentences(pdf_list)
 
     # Get the top sentences from the pdf with the model
     best_sentences = get_top_sentences(sentences)
@@ -18,7 +18,7 @@ def extract_repo_links_from_pdf(pdf_path: str) -> Tuple[List[str], str]:
 
     for sentence in best_sentences:
         # Look for github links
-        repo_links = ls.find_repo_links(sentence)
+        repo_links = find_repo_links(sentence)
 
         if repo_links:
             link = repo_links[0]
@@ -44,16 +44,16 @@ def extract_repo_links_from_pdf(pdf_path: str) -> Tuple[List[str], str]:
             all_footnotes.extend(numbers+extra_chars)
 
     if not link and reference_numbers:  # No link found in best matches, look for references or footnotes
-        link = ls.find_link_in_references(reference_numbers, references)
+        link = find_link_in_references(reference_numbers, references)
 
     if not link and all_footnotes:
         # Remove duplicates in all_footnotes while keeping order
         all_footnotes = list(dict.fromkeys(all_footnotes))
-        link = ls.find_link_in_footnotes(all_footnotes, footnotes)
+        link = find_link_in_footnotes(all_footnotes, footnotes)
 
         if not link:
-            sentences_with_footnote = ls.get_sentences_with_footnote(
+            sentences_with_footnote = get_sentences_with_footnote(
                 all_footnotes, sentences, best_sentences)
-            link = ls.find_link_in_sentences(sentences_with_footnote)
+            link = find_link_in_sentences(sentences_with_footnote)
 
-    return best_sentences, clean_final_link(link)
+    return clean_final_link(link)

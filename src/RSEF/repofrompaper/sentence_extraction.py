@@ -1,14 +1,14 @@
-from RSEF.repofrompaper.utils.helpers import clean_final_sentence
-from RSEF.extraction.pdf_extraction_tika import read_pdf_list
+from ..extraction.pdf_extraction_tika import read_pdf_list
+from .utils.helpers import clean_final_sentence
 from typing import List, Dict, Tuple
 import re
 
 
 def extract_references(pdf_list: List[str]) -> Tuple[Dict[str, str], List[str]]:
-    '''
+    """
     Extracts references from a list of paragraphs. 
     Returns a dictionary with the references and a list of non-references.
-    '''
+    """
     references, not_references = {}, []
     skip_until = None
     pattern = r'^\[\d{1,2}\]\s'
@@ -63,11 +63,11 @@ def extract_references(pdf_list: List[str]) -> Tuple[Dict[str, str], List[str]]:
 
 
 def extract_full_sentences(pdf_list: List[str]) -> Tuple[List[str], List[str]]:
-    '''
+    """
     Extracts full sentences from a list of paragraphs. 
     Returns a list of full sentences and a list of non-full sentences.
     A full sentence is a sentence that begins with a capital letter and ends with a period.
-    '''
+    """
     full_sentences, not_final_sentences = [], []
     for paragraph in pdf_list:
         if len(paragraph.replace(" ", '').replace('\n', '')) < 10:
@@ -111,11 +111,11 @@ def extract_full_sentences(pdf_list: List[str]) -> Tuple[List[str], List[str]]:
 
 
 def combine_split_sentences(sentences: List[str]) -> Tuple[List[str], List[str]]:
-    '''
+    """
     Combines split sentences and returns a list of combined sentences and a list of non-combined sentences.
     A sentence is combined if it begins with a capital letter and does not end with a period, 
     and the next sentence begins with a lowercase letter and ends with a period.
-    '''
+    """
     final_sentences, uncombined_sentences = [], []
     skip_next = False
     for id, paragraph in enumerate(list(sentences)):
@@ -157,10 +157,10 @@ def combine_split_sentences(sentences: List[str]) -> Tuple[List[str], List[str]]
 
 
 def extract_footnotes(pdf_list: List[str]) -> dict:
-    '''
+    """
     Extracts footnotes by looking for numbers in the text followed by a link. 
     Returns a dictionary with the number as key and the link as value.
-    '''
+    """
     LINK_REGEX = r'\b(\d+)\s*(https?://(?:www\.)?(?:github\.com|gitlab\.com)/[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+)\b'
 
     matches_dict = {}
@@ -172,11 +172,8 @@ def extract_footnotes(pdf_list: List[str]) -> dict:
     return matches_dict
 
 
-def get_sentences(pdf_path: str) -> Tuple[Dict[str, str], Dict[str, str], List[str]]:
-    '''Extracts references, footnotes and sentences from a pdf file.'''
-    # Read the pdf file with Tika
-    pdf_list = read_pdf_list(pdf_path, splitter='\n\n')
-
+def get_sentences(pdf_list: list) -> Tuple[Dict[str, str], Dict[str, str], List[str]]:
+    """Extracts references, footnotes and sentences from a pdf file."""
     # Extract reference sentences and non-reference sentences
     references, not_final_sentences = extract_references(pdf_list)
 
