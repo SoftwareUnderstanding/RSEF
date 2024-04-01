@@ -4,7 +4,6 @@ import os
 from ..extraction.pdf_extraction_tika import read_pdf_list, get_possible_abstract, extract_urls, raw_read_pdf, raw_to_list
 from ..extraction.paper_obj import PaperObj
 from ..object_creator.create_downloadedObj import downloadedDic_to_downloadedObj
-from ..repofrompaper.rfp import extract_repo_links_from_pdf
 
 
 def downloaded_to_paperObj(downloadedObj):
@@ -21,14 +20,13 @@ def downloaded_to_paperObj(downloadedObj):
         raw_pdf_data = raw_read_pdf(pdf_path=downloadedObj.file_path)
         pdf_data_list = raw_to_list(raw_pdf_data)
         urls = extract_urls(raw_pdf_data, pdf_data_list)
-        proposal_url = extract_repo_links_from_pdf(pdf_list=raw_to_list(raw_pdf_data=raw_pdf_data, splitter='\n\n\n'))
         abstract = get_possible_abstract(pdf_data_list)
         title = downloadedObj.title
         doi = downloadedObj.doi
         arxiv = downloadedObj.arxiv
         file_name = downloadedObj.file_name
         file_path = downloadedObj.file_path
-        return PaperObj(title=title, urls=urls, doi=doi, arxiv=arxiv, abstract=abstract, file_name=file_name, file_path=file_path, proposal_url=proposal_url)
+        return PaperObj(title=title, urls=urls, doi=doi, arxiv=arxiv, abstract=abstract, file_name=file_name, file_path=file_path)
     except Exception as e:
         print(str(e))
         print("Error while trying to read from the pdf")

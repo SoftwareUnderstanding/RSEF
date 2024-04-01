@@ -1,4 +1,5 @@
 from .link_search import get_sentences_with_footnote, find_link_in_footnotes, find_link_in_references, find_link_in_sentences, find_repo_links
+from ..extraction.pdf_extraction_tika import read_pdf_list
 from .utils.constants import FOOTNOTE_NUM_LIMIT
 from .sentence_extraction import get_sentences
 from .model_inference import get_top_sentences
@@ -6,9 +7,10 @@ from .utils.helpers import clean_final_link
 from typing import List, Tuple
 import re
 
-def extract_repo_links_from_pdf(pdf_list: list) -> Tuple[List[str], str]:
+def extract_repo_links_from_pdf(pdf_path: str) -> Tuple[List[str], str]:
     """Extract the top sentences from the pdf and find the link"""
     # Get all sentences, footnotes and references from the pdf-to-text
+    pdf_list = read_pdf_list(pdf_path, splitter='\n\n\n')
     references, footnotes, sentences = get_sentences(pdf_list)
 
     # Get the top sentences from the pdf with the model

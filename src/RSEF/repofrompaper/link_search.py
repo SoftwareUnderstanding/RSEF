@@ -20,7 +20,7 @@ def find_link_in_references(reference_numbers: List[str], references: Dict[str, 
             repo_links = find_repo_links(references[ref])
             if repo_links:
                 link = repo_links[0]
-                print(f'Found {link} in {ref} from references')
+                print(f'Found {link} in references dictionary using {ref} reference number')
                 return link
     return None
 
@@ -31,7 +31,7 @@ def find_link_in_footnotes(all_footnotes: List[str], footnotes: Dict[str, str]) 
     for f in all_footnotes:
         if f in footnotes:
             link = footnotes[f]
-            print(f'Found {link} in {f} from footnotes dictionary')
+            print(f'Found {link} in footnotes dictionary using footnote {f}')
             return link
     return None
 
