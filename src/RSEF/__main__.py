@@ -67,8 +67,8 @@ def assess(input, output, unidir, bidir):
             papers_json_to_unidir_json(papers_json=input, output_dir=output)
             return
         else:
-            single_doi_pipeline_unidir(doi=input,output_dir=output)
-            return
+            repo_link = single_doi_pipeline_unidir(doi=input,output_dir=output)
+            return repo_link
 
     elif bidir:
         if input.endswith(".txt") and os.path.exists(input):

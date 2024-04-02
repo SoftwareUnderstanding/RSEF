@@ -4,6 +4,7 @@ from .create_downloadedObj import meta_to_dwnldd, pdf_to_downloaded_obj
 from .downloaded_to_paperObj import downloaded_to_paperObj
 from .paper_to_directionality import check_bidir, check_unidir
 from .paper_obj_utils import paperDict_to_paperObj
+from ..repofrompaper.rfp import extract_repo_links_from_pdf
 import json
 import os
 
@@ -52,12 +53,12 @@ def single_doi_pipeline_unidir(doi, output_dir):
     :returns:
     dictionary with doi and the urls found that are unidirectional for that doi
     """
-    paper = doi_to_paper(doi,output_dir)
+    paper = doi_to_paper(doi, output_dir)
     if not paper:
         print("Error while creating paperObj")
         return None
-    result = check_unidir(paper,output_dir)
-    return result
+    repo_link = extract_repo_links_from_pdf(paper.file_path)
+    return repo_link
 
 
 def single_pdf_pipeline_single_bidir(pdf, output_dir):
