@@ -1,9 +1,10 @@
 import json
 import logging
 import os
-from ..extraction.pdf_extraction_tika import read_pdf_list, get_possible_abstract, extract_urls, raw_read_pdf, raw_to_list
+from ..extraction.pdf_extraction_tika import get_possible_abstract, extract_urls, raw_read_pdf, raw_to_list
 from ..extraction.paper_obj import PaperObj
 from ..object_creator.create_downloadedObj import downloadedDic_to_downloadedObj
+from ..object_creator.implementation_url import ImplementationUrl
 
 
 def downloaded_to_paperObj(downloadedObj):
@@ -19,14 +20,19 @@ def downloaded_to_paperObj(downloadedObj):
         # TODO optimise
         raw_pdf_data = raw_read_pdf(pdf_path=downloadedObj.file_path)
         pdf_data_list = raw_to_list(raw_pdf_data)
-        urls = extract_urls(raw_pdf_data, pdf_data_list)
+        urls_dict, urls = extract_urls(raw_pdf_data, pdf_data_list), []
+        if urls_dict:
+            for url_type, url_list in urls_dict.items():
+                for url in url_list:
+                    implementation_url = ImplementationUrl(url=url['url'], url_type=url_type, frequency=url['#_appearances'], extraction_method=['regex'], source_paragraphs=[])
+                    urls.append(implementation_url)
         abstract = get_possible_abstract(pdf_data_list)
         title = downloadedObj.title
         doi = downloadedObj.doi
         arxiv = downloadedObj.arxiv
         file_name = downloadedObj.file_name
         file_path = downloadedObj.file_path
-        return PaperObj(title=title, urls=urls, doi=doi, arxiv=arxiv, abstract=abstract, file_name=file_name, file_path=file_path)
+        return PaperObj(title=title, implementation_urls=urls, doi=doi, arxiv=arxiv, abstract=abstract, file_name=file_name, file_path=file_path)
     except Exception as e:
         print(str(e))
         print("Error while trying to read from the pdf")

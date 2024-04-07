@@ -58,4 +58,4 @@ def extract_repo_links_from_pdf(pdf_path: str) -> Tuple[List[str], str]:
                 all_footnotes, sentences, best_sentences)
             link = find_link_in_sentences(sentences_with_footnote)
 
-    return clean_final_link(link)
+    return clean_final_link(link), 'sample source paragraph' # TODO: Implement source paragraph extraction
