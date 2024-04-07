@@ -57,7 +57,7 @@ def cli():
 @click.option('--output', '-o', default="output", show_default=True, help="Output csv file", metavar='<path>')
 @click.option('--unidir', '-U', is_flag=True, default = False, help="Unidirectionality")
 @click.option('--bidir', '-B', is_flag=True, default = False, help="Bidirectionality")
-def assess(input, output, unidir, bidir, both):
+def assess(input, output, unidir, bidir):
     from .object_creator.pipeline import dois_txt_to_unidir_json, dois_txt_to_bidir_json, single_doi_pipeline_unidir, \
         single_doi_pipeline_bidir, papers_json_to_unidir_json, papers_json_to_bidir_json
     if unidir:
