@@ -1,9 +1,9 @@
+from ..object_creator.implementation_url import ImplementationUrl
 from ..utils.regex import str_to_doiID, str_to_arxivID
-
 class PaperObj:
-    def __init__(self, title, urls, doi, arxiv, abstract, file_name, file_path):
+    def __init__(self, title, implementation_urls, doi, arxiv, abstract, file_name, file_path):
         self._title = title
-        self._urls = urls
+        self._implementation_urls = implementation_urls
         self._doi = str_to_doiID(doi)
         self._arxiv = str_to_arxivID(arxiv)
         self._file_name = file_name
@@ -19,12 +19,32 @@ class PaperObj:
         self._title = value
 
     @property
-    def urls(self):
-        return self._urls
+    def implementation_urls(self):
+        return self._implementation_urls
 
-    @urls.setter
-    def urls(self, value):
-        self._urls = value
+    @implementation_urls.setter
+    def implementation_urls(self, value):
+        self._implementation_urls = value
+
+    def add_implementation_link(self, url, url_type, source_paragraphs=[], extraction_method='regex', frequency=1):
+        duplicate = False
+        # Look for the url in the list of implementation urls
+        for implementation_url in self._implementation_urls:
+            if implementation_url.url == url:
+                # Append the extraction method to the list of extraction methods
+                implementation_url.extraction_method.append(extraction_method)
+                
+                # If source paragraphs are provided, append them to the list of source paragraphs
+                if source_paragraphs:
+                    implementation_url.source_paragraphs.extend(source_paragraphs)
+                    
+                duplicate = True
+                break
+            
+        # If the url is not in the list of implementation urls, add it
+        if not duplicate:
+            implementation_url = ImplementationUrl(url=url, url_type=url_type, extraction_method=[extraction_method], source_paragraphs=source_paragraphs, frequency=frequency)
+            self._implementation_urls.append(url)
 
     @property
     def abstract(self):
@@ -69,7 +89,7 @@ class PaperObj:
     def to_dict(self):
         return {
             'title': self._title,
-            'urls': self._urls,
+            'implementation_urls': [url.to_dict() for url in self._implementation_urls],
             'doi': self._doi,
             'arxiv': self._arxiv,
             'abstract': self._abstract,

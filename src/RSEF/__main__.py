@@ -67,17 +67,14 @@ def assess(input, output, unidir, bidir):
             papers_json_to_unidir_json(papers_json=input, output_dir=output)
             return
         else:
-            repo_link = single_doi_pipeline_unidir(doi=input,output_dir=output)
-            return repo_link
-
+            return single_doi_pipeline_unidir(doi=input,output_dir=output)
     elif bidir:
         if input.endswith(".txt") and os.path.exists(input):
             dois_txt_to_bidir_json(dois_txt=input,output_dir=output)
         if input.endswith(".json") and os.path.exists(input):
             papers_json_to_bidir_json(papers_json=input, output_dir=output)
         else:
-            single_doi_pipeline_bidir(doi=input, output_dir=output)
-            return
+            return single_doi_pipeline_bidir(doi=input, output_dir=output)
     else:
         print("Please select a directionality to measure")
         print("-U is to assess Uni-directionality")

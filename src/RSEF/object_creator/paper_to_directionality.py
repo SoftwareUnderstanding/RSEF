@@ -43,23 +43,26 @@ def check_paper_directionality(paper, directionality, output_dir):
         return None
     try:
         first_time = True
-        if not (pp_urls := paper.urls):
+        if not (pp_urls := paper.implementation_urls):
             logging.info(f"This paper {iden}, it does not have any urls")
             return None
 
         # Check for zenodo directionality
-        zenodo_urls = pp_urls.get("zenodo", [])
+        zenodo_urls = [url.url for url in pp_urls if url.url_type == "zenodo"]
         _zenodo_check_directionality(paper, zenodo_urls, directionality, iden, first_time, result, output_dir)
 
         # Check for git urls
-        git_urls = pp_urls.get("git", [])
+        git_urls = [url.url for url in pp_urls if url.url_type == "git"]
         _git_check_directionality(paper=paper, git_urls=git_urls, directionality=directionality,
                                   iden=iden, first_time=first_time, output_dir=output_dir, result=result)
 
         if len(result.keys()) > 0:
-            return result
-        else:
-            return None
+            bidir_urls = [entry for entry in result[iden]]
+            for bidir_url_obj in bidir_urls:
+                url_type = "git" if "git" in bidir_url_obj['url'] else "zenodo"
+                source_para = [x['location'] for x in bidir_url_obj['bidirectional']]
+                paper.add_implementation_link(bidir_url_obj['url'], url_type, source_paragraphs=[source_para], extraction_method='bidir')
+        return paper
 
     except Exception as e:
         logging.error(f"Issue while check the paper's directionality: {e}")
@@ -70,10 +73,7 @@ def _zenodo_check_directionality(paper, zenodo_urls, directionality, iden, first
     is_unidir = None
     is_bidir = None
 
-    for entry in zenodo_urls:
-        url = safe_dic(entry, "url")
-        if not url:
-            continue
+    for url in zenodo_urls:
         if directionality:
             is_bidir = zenodo_is_it_bidir(paper_obj=paper, zenodo_url=url, output_dir=output_dir)
 
@@ -89,7 +89,6 @@ def _zenodo_check_directionality(paper, zenodo_urls, directionality, iden, first
                 "bidirectional": is_bidir
             }
             result[iden].append(entry)
-            print(entry)
 
     return
 
@@ -98,10 +97,7 @@ def _git_check_directionality(paper, git_urls, directionality, iden, first_time,
     is_unidir = None
     is_bidir = None
 
-    for entry in git_urls:
-        url = safe_dic(entry, "url")
-        if not url:
-            continue
+    for url in git_urls:
         # Download repository from SOMEF
         repo_file = download_repo_metadata(url, output_dir)
         if not repo_file:
@@ -121,7 +117,6 @@ def _git_check_directionality(paper, git_urls, directionality, iden, first_time,
                 "bidirectional": is_bidir
             }
             result[iden].append(entry)
-            print(entry)
         if is_unidir:
             if first_time:
                 result[iden] = []

@@ -42,8 +42,7 @@ def single_doi_pipeline_bidir(doi, output_dir):
     dictionary with doi and the urls found that are bidirectional for that doi
     """
     paper = doi_to_paper(doi,output_dir)
-    result = check_bidir(paper,output_dir)
-    return result
+    return check_bidir(paper,output_dir)
 
 
 def single_doi_pipeline_unidir(doi, output_dir):
@@ -57,8 +56,10 @@ def single_doi_pipeline_unidir(doi, output_dir):
     if not paper:
         print("Error while creating paperObj")
         return None
-    repo_link = extract_repo_links_from_pdf(paper.file_path)
-    return repo_link
+    repo_link, source_para = extract_repo_links_from_pdf(paper.file_path)
+    if repo_link:
+        paper.add_implementation_link(repo_link, 'git', source_paragraphs=[source_para], extraction_method='unidir')
+    return paper
 
 
 def single_pdf_pipeline_single_bidir(pdf, output_dir):
