@@ -125,13 +125,16 @@ Options:
 
 -o, --output <path>  Output csv file  [default: output]
 
--U, --unidir Unidirectionality
+-U, --unidir Unidirectional link search
 
--B, --bidir  Bidirectionality
+-B, --bidir  Bidirectional link search
 
 -h, --help Show this message and exit.
 ```
 
+- The unidirectional link search uses the RepoFromPaper submodule to search for the implementation repository link in the paper. The RepoFromPaper submodule utilizes a SciBert Model to classify the paper's text as either a proposal sentence or not. The top 5 highest ranked sentences are then searched for a repository link. If no link is found in the initial search, a footnote/reference search is conducted. RepoFromPaper can either return a link or return an empty response if no link is found.
+- The bidirectional link search intends to find paper-repo links where both the paper points to the repo and the repo (metadata) points back to the paper. The bidir search targets 'Git' and 'Zenodo' links. The search may find zero, one, or multiple bidirectional links. 
+- If repository links are found in the paper, the links and search methods (unidir/bidir) are added to the `ImplementationUrl` list in the `PaperObj` of the paper. The list of implementation urls is initially created using regex link search method when the paper object is created. Both the unidir and bidir search methods return the `PaperObj`, with the updated `ImplementationUrl` list if links were found.
 ## Structure
 
 
@@ -145,19 +148,14 @@ The src/RSEF is divided into the following directories:
 
 4. Object_creator
 
-5. Modelling
+5. RepoFromPaper 
 
-6. Prediction
+6. Modelling
 
-7. Utils
+7. Prediction
 
+8. Utils
 
-### Metadata
-
-
-Encompasses all petitions to OpenAlex and other api's for fetching the paper's metadata or general requests.
-
-MetadataObj contains the metadata from  OpenAlex: doi, arxiv and its title.
 
 ### Download_pdf
 
@@ -176,6 +174,13 @@ Contains:
 These objects are normally saved into a `downloaded_metadata.json`
 
   
+
+### Metadata
+
+
+Encompasses all petitions to OpenAlex and other api's for fetching the paper's metadata or general requests.
+
+MetadataObj contains the metadata from  OpenAlex: doi, arxiv and its title.
 
 ### Extraction
 
@@ -196,18 +201,22 @@ Contains:
 Finally, the necessary functions downloading a repository and extracting its metadata with SOMEF
 
   
+### Object Creator
+
+This is the pipeline broken down into its main parts. Please look at [pipeline.py](./object_creator/pipeline.py) to view the execution process.
+
+  
+### RepoFromPaper
+
+Contains the code for the RepoFromPaper (RFP) package. RFP uses a combination of natural language processing and heuristics to identify and extract the repository links mentioned in a proposal manner from a paper.
+
+As input it receives the local file path of the paper and returns the repository URL if found.
 
 ### Modelling
 
 Contains all assessment of bi-directionality and uni-directionality.
 
 Receives a paperObj and a repository_metadata json.
-
-  
-
-### Object Creator
-
-This is the pipeline broken down into its main parts. Please look at [pipeline.py](./object_creator/pipeline.py) to view the execution process.
 
   
 
