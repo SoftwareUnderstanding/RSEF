@@ -5,6 +5,9 @@ from ..modelling.zenodo_bidirectionality import is_it_bidir as zenodo_is_it_bidi
 from ..modelling.unidirectionality import is_repo_unidir
 import logging
 
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
+
 
 def check_bidir(paper, output_dir):
     return check_paper_directionality(paper, True, output_dir)
@@ -24,14 +27,14 @@ def _get_identifier(paper):
     identifier
     """
     if not paper:
-        logging.error("Paper Object is None")
+        log.error("Paper Object is None")
         return None
-    if paper.doi and paper.doi is not "0":
+    if paper.doi and paper.doi != "0":
         return paper.doi
     elif paper.arxiv:
         return paper.arxiv
     else:
-        logging.error("Paper Object Has no identifier to use")
+        log.error("Paper Object Has no identifier to use")
         return None
 
 
@@ -39,17 +42,19 @@ def check_paper_directionality(paper, directionality, output_dir):
     result = {}
 
     if not (iden := _get_identifier(paper)):
-        logging.error("check_paper_directionality: No identifier found for this paper")
+        log.error(
+            "check_paper_directionality: No identifier found for this paper")
         return None
     try:
         first_time = True
         if not (pp_urls := paper.implementation_urls):
-            logging.info(f"This paper {iden}, it does not have any urls")
+            log.info(f"This paper {iden}, it does not have any urls")
             return None
 
         # Check for zenodo directionality
         zenodo_urls = [url.url for url in pp_urls if url.url_type == "zenodo"]
-        _zenodo_check_directionality(paper, zenodo_urls, directionality, iden, first_time, result, output_dir)
+        _zenodo_check_directionality(
+            paper, zenodo_urls, directionality, iden, first_time, result, output_dir)
 
         # Check for git urls
         git_urls = [url.url for url in pp_urls if url.url_type == "git"]
@@ -60,26 +65,26 @@ def check_paper_directionality(paper, directionality, output_dir):
             bidir_urls = [entry for entry in result[iden]]
             for bidir_url_obj in bidir_urls:
                 url_type = "git" if "git" in bidir_url_obj['url'] else "zenodo"
-                source_para = [x['location'] for x in bidir_url_obj['bidirectional']]
-                paper.add_implementation_link(bidir_url_obj['url'], url_type, source_paragraphs=[source_para], extraction_method='bidir')
+                source_para = [x['location']
+                               for x in bidir_url_obj['bidirectional']]
+                paper.add_implementation_link(
+                    bidir_url_obj['url'], url_type, source_paragraphs=source_para, extraction_method='bidir')
+
         return paper
 
     except Exception as e:
-        logging.error(f"Issue while check the paper's directionality: {e}")
+        log.error(f"Issue while check the paper's directionality: {e}")
         return None
 
 
 def _zenodo_check_directionality(paper, zenodo_urls, directionality, iden, first_time, result, output_dir):
-    is_unidir = None
     is_bidir = None
 
     for url in zenodo_urls:
         if directionality:
-            is_bidir = zenodo_is_it_bidir(paper_obj=paper, zenodo_url=url, output_dir=output_dir)
-
-        else:
-            # TODO unidir
-            continue
+            is_bidir = zenodo_is_it_bidir(
+                paper_obj=paper, zenodo_url=url, output_dir=output_dir)
+       
         if is_bidir:
             if first_time:
                 result[iden] = []
@@ -89,7 +94,6 @@ def _zenodo_check_directionality(paper, zenodo_urls, directionality, iden, first
                 "bidirectional": is_bidir
             }
             result[iden].append(entry)
-
     return
 
 
@@ -101,7 +105,7 @@ def _git_check_directionality(paper, git_urls, directionality, iden, first_time,
         # Download repository from SOMEF
         repo_file = download_repo_metadata(url, output_dir)
         if not repo_file:
-            logging.error(f"Issue while downloading the repository for {iden}")
+            log.error(f"Issue while downloading the repository for {iden}")
             continue
         # assessment of bidirectionality
         if directionality:

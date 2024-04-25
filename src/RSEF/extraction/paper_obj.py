@@ -10,6 +10,12 @@ class PaperObj:
         self._file_path = file_path
         self._abstract = abstract
 
+    def __str__(self):
+        return f"Title: {self._title}\nImplementation URLs: {self._implementation_urls}\nDOI: {self._doi}\nArXiv: {self._arxiv}\nAbstract: {self._abstract}\nFile Name: {self._file_name}\nFile Path: {self._file_path}"
+
+    def __repr__(self):
+        return self.__str__()
+    
     @property
     def title(self):
         return self._title
