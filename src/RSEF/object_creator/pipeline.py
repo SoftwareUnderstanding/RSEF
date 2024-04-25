@@ -1,12 +1,15 @@
-# TODO
 from .create_metadata_obj import doi_to_metadataObj
 from .create_downloadedObj import meta_to_dwnldd, pdf_to_downloaded_obj
 from .downloaded_to_paperObj import downloaded_to_paperObj
 from .paper_to_directionality import check_bidir, check_unidir
 from .paper_obj_utils import paperDict_to_paperObj
 from ..repofrompaper.rfp import extract_repo_links_from_pdf
+import logging
 import json
 import os
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
 
 
 def doi_to_paper(doi, output_dir):
@@ -34,34 +37,54 @@ def pdf_to_paper(pdf, output_dir):
     return downloaded_to_paperObj(downloadedObj=dwnldd)
 
 
-def single_doi_pipeline_bidir(doi, output_dir):
+def process_paper(paper, output_dir, bidir=True, unidir=True):
     """
-    :param doi: doi
-    :param output_dir: where the pdf will be downloaded to
+    :param paper: paperObj
+    :param output_dir: output directory
+    :param bidir: flag to enable bidirectional pipeline
+    :param unidir: flag to enable unidirectional pipeline
     :returns:
-    dictionary with doi and the urls found that are bidirectional for that doi
+    paperObj with URLs found based on the specified pipeline types
     """
-    paper = doi_to_paper(doi,output_dir)
-    return check_bidir(paper,output_dir)
+    log.info(f"Analyzing paper with DOI: {paper.doi}")
 
+    if bidir:
+        log.info("Checking bidirectional links")
+        paper = check_bidir(paper, output_dir)
 
-def single_doi_pipeline_unidir(doi, output_dir):
-    """
-    :param doi: doi
-    :param output_dir: where the pdf will be downloaded to
-    :returns:
-    dictionary with doi and the urls found that are unidirectional for that doi
-    """
-    paper = doi_to_paper(doi, output_dir)
-    if not paper:
-        print("Error while creating paperObj")
-        return None
-    repo_link, source_para = extract_repo_links_from_pdf(paper.file_path)
-    if repo_link:
-        paper.add_implementation_link(repo_link, 'git', source_paragraphs=[source_para], extraction_method='unidir')
+    if unidir:
+        log.info("Checking unidirectional links")
+        repo_link, source_para = extract_repo_links_from_pdf(paper.file_path)
+        if repo_link:
+            paper.add_implementation_link(repo_link, 'git', source_paragraphs=[source_para],
+                                          extraction_method='unidir')
+
+    log.info(f"Finished analyzing paper with DOI: {paper.doi}")
     return paper
 
 
+def single_doi_pipeline(doi, output_dir, bidir=True, unidir=True):
+    """
+    :param doi: DOI
+    :param output_dir: where the PDFs will be downloaded to
+    :param bidir: flag to enable bidirectional pipeline
+    :param unidir: flag to enable unidirectional pipeline
+    :returns:
+    dictionary with DOI and the URLs found based on the specified pipeline types
+    """
+    paper = doi_to_paper(doi, output_dir)
+
+    if not paper:
+        log.error("Error while creating paperObj")
+        return None
+
+    paper = process_paper(paper, output_dir, bidir=bidir, unidir=unidir)
+    result = [paper.to_dict()]
+
+    return dict_to_json({'RSEF Output': result}, output_path=os.path.join(output_dir, "url_search_output.json"))
+
+
+# TODO: Check if this function is needed, it is not used in the code
 def single_pdf_pipeline_single_bidir(pdf, output_dir):
     """
     :param pdf: pdf
@@ -69,14 +92,15 @@ def single_pdf_pipeline_single_bidir(pdf, output_dir):
     :returns:
     dictionary with doi and the urls found that are bidirectional for that doi
     """
-    paper = pdf_to_paper(pdf,output_dir)
+    paper = pdf_to_paper(pdf, output_dir)
     if not paper:
-        print("Error while creating paperObj")
+        log.error("Error while creating paperObj")
         return None
-    result = check_bidir(paper,output_dir)
+    result = check_bidir(paper, output_dir)
     return result
 
 
+# TODO: Check if this function is needed, it is not used in the code
 def single_pdf_pipeline_unidir(pdf, output_dir):
     """
     :param pdf: pdf
@@ -84,84 +108,61 @@ def single_pdf_pipeline_unidir(pdf, output_dir):
     :returns:
     dictionary with doi and the urls found that are unidirectional for that doi
     """
-    paper = pdf_to_paper(pdf,output_dir)
+    paper = pdf_to_paper(pdf, output_dir)
     if not paper:
-        print("Error while creating paperObj")
+        log.error("Error while creating paperObj")
         return None
-    result = check_unidir(paper,output_dir)
+    result = check_unidir(paper, output_dir)
     return result
 
 
-def multiple_doi_pipeline_bidir(list_dois, output_dir):
+def multi_doi_pipeline(list_dois, output_dir, bidir=True, unidir=True):
     """
-    :param list_dois: list of dois
-    :param output_dir: where the pdf will be downloaded to
+    :param list_dois: list of DOIs
+    :param output_dir: where the PDFs will be downloaded to
+    :param bidir: flag to enable bidirectional search
+    :param unidir: flag to enable unidirectional search
     :returns:
-    dictionary with dois and the urls found that are bidirectional for that doi
+    dictionary with DOIs and the URLs found based on the specified search type
     """
-    result = {}
+    result = []
+
     try:
         for doi in list_dois:
-            paper = doi_to_paper(doi,output_dir)
+            paper = doi_to_paper(doi, output_dir)
+
             if not paper:
-                continue
-            if (bidir := (check_bidir(paper, output_dir))):
-                result.update(bidir)
-        return result
+                log.error("Error while creating paperObj")
+                return None
+
+            paper = process_paper(
+                paper, output_dir, bidir=bidir, unidir=unidir)
+
+            result.append(paper.to_dict())
+
+        return dict_to_json({'RSEF Output': result}, output_path=os.path.join(output_dir, "url_search_output.json"))
     except Exception as e:
-        print(str(e))
+        log.error(str(e))
         return None
 
 
-def multiple_doi_pipeline_unidir(list_dois, output_dir):
+def multi_doi_search(dois_txt, output_dir, bidir=True, unidir=True):
     """
-    :param list_dois: list of dois
-    :param output_dir: where the pdf will be downloaded to
+    :param dois_txt: DOIs separated by \n within a txt file
+    :param output_dir: where the PDFs will be downloaded to
+    :param bidir: flag to enable bidirectional search
+    :param unidir: flag to enable unidirectional search
     :returns:
-    dictionary with dois and the urls found that are unidirectional for that doi
-    """
-    result = {}
-    try:
-        for doi in list_dois:
-            paper = doi_to_paper(doi,output_dir)
-            if not paper:
-                continue
-            if (unidir:=(check_unidir(paper,output_dir))):
-                result.update(unidir)
-        return result
-    except Exception as e:
-        print(str(e))
-        return None
-
-
-def dois_txt_pipeline_bidir(dois_txt, output_dir):
-    """
-    :param dois_txt: dois seperated by \n within a txt
-    :param output_dir: where the pdf will be downloaded to
-    :returns:
-    dictionary with dois and the urls found that are bidirectional for that doi
+    dictionary with DOIs and the URLs found based on the specified search type
     """
     try:
         with open(dois_txt, 'r') as file:
             dois = file.read().splitlines()
     except:
-        print("Error while opening the txt")
-    return multiple_doi_pipeline_bidir(dois, output_dir)
+        log.error("Error while opening the txt")
+        return None
 
-
-def dois_txt_pipeline_unidir(dois_txt, output_dir):
-    """
-    :param dois_txt: dois seperated by \n within a txt
-    :param output_dir: where the pdf will be downloaded to
-    :returns:
-    dictionary with dois and the urls found that are bidirectional for that doi
-    """
-    try:
-        with open(dois_txt, 'r') as file:
-            dois = file.read().splitlines()
-    except:
-        print("Error while opening the txt")
-    return multiple_doi_pipeline_unidir(dois, output_dir)
+    return multi_doi_pipeline(dois, output_dir, bidir=bidir, unidir=unidir)
 
 
 def dict_to_json(dictionary, output_path):
@@ -175,7 +176,7 @@ def dict_to_json(dictionary, output_path):
             json.dump(dictionary, out_file, indent=4, ensure_ascii=False)
         return output_path
     except Exception as e:
-        print(str(e))
+        log.error(str(e))
         return None
 
 
@@ -184,82 +185,39 @@ def load_json(path):
         return json.load(f)
 
 
-def dois_txt_to_bidir_json(dois_txt, output_dir):
+def paper_objects_search(papers_json, output_dir, bidir=True, unidir=True):
     """
-    :param dois_txt: dois seperated by \n within a txt
-    :param output_dir: where the pdf will be downloaded to
+    :param papers_json: JSON of papers, Key: DOI, Value: paperObj (as a dictionary)
+    :param output_dir: where the JSON will be saved to
+    :param bidir: flag to enable bidirectional search
+    :param unidir: flag to enable unidirectional search
     :returns:
     path to output JSON
     """
-    output_path = os.path.join(output_dir, "bidir_1.json")
-    return dict_to_json(dois_txt_pipeline_bidir(dois_txt, output_dir), output_path)
+    result = []
 
-
-def dois_txt_to_unidir_json(dois_txt, output_dir):
-    """
-    :param dois_txt: dois seperated by \n within a txt
-    :param output_dir: where the pdf will be downloaded to
-    :returns:
-    path to output JSON
-    """
-    output_path = os.path.join(output_dir,"unidir.json")
-    return dict_to_json(dois_txt_pipeline_unidir(dois_txt, output_dir), output_path)
-
-
-def papers_json_to_unidir_json(papers_json, output_dir):
-    """
-    :param papers_json: Json of papers K:doi V: paperObj
-    :param output_dir: where the pdf will be downloaded to
-    :returns:
-    dictionary with dois and the urls found that are unidirectional for that doi
-    """
-    result = {}
     try:
         paper_dicts = load_json(papers_json)
-        print("Successfully opened JSON")
+        log.info("Successfully opened JSON")
     except Exception as e:
-        print("Error while trying to load the Papers JSON")
-        print(str(e))
-        return None
+        log.error("Error while trying to load the Papers JSON")
+        log.error(str(e))
+        return
+
     for id in paper_dicts:
-        print(f"Analysing directionality for {id}")
+        log.info(f"Analyzing directionality for {id}")
         paperDict = safe_dic(paper_dicts, id)
         paper = paperDict_to_paperObj(paperDict)
-        unidir = check_unidir(paper, output_dir)
-        if unidir:
-            result.update(unidir)
-        print(f"Finished analysing {id}")
-        print(f"Unidirectional?", (unidir is not None))
-        print("=========================")
-    return dict_to_json(result, output_path=os.path.join(output_dir, "unidir.json"))
 
+        if not paper:
+            log.error("Error while creating paperObj")
+            return None
 
-def papers_json_to_bidir_json(papers_json, output_dir):
-    """
-    :param papers_json: json of papers, Key: DOI, V: paperObj (as a dictionary)
-    :param output_dir: where the json will be saved to
-    :returns:
-    path to output JSON
-    """
-    result = {}
-    try:
-        paper_dicts = load_json(papers_json)
-        print("Successfully opened JSON")
-    except Exception as e:
-        print("Error while trying to load the Papers JSON")
-        print(str(e))
-        return None
-    for id in paper_dicts:
-        print(f"Analysing directionality for {id}")
-        paperDict = safe_dic(paper_dicts, id)
-        paper = paperDict_to_paperObj(paperDict)
-        bidir = check_bidir(paper, output_dir)
-        if bidir:
-            result.update(bidir)
-        print(f"Finished analysing {id}")
-        print(f"Bidirectional?", (bidir is not None))
-        print("=========================")
-    return dict_to_json(result, output_path=os.path.join(output_dir, "bidir.json"))
+        paper = process_paper(paper, output_dir, bidir=bidir, unidir=unidir)
+
+        result.append(paper.to_dict())
+
+    return dict_to_json({'RSEF Output': result}, output_path=os.path.join(output_dir, "url_search_output.json"))
 
 
 def safe_dic(dic, key):
