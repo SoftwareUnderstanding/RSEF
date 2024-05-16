@@ -94,14 +94,26 @@ Options:
 
 ### Processed
 
-The process command allows to take Identifier, or downloaded paper and process it to extract the abstract and github and zenodo urls. These will be saved in a json named ```processed_metadata.json```
+The process command allows to extract the abstract and github and zenodo urls from a paper or a list of papers. This command accepts different inputs:
+1. A path to downloaded_metadata.json file
+
+2. A path to results.json file, obtained by executing 
+doiExtractor tool (https://github.com/oeg-upm/DOI-Extractor-OEG)
+
+3. A path to a .pdf file 
+
+4. A path to a folder fith PDFs
+
+The output of the execution  is saved in a json named ```processed_metadata.json```. In addition when passing the path to results.json file, this command will download the papers in the PDFs folder and create a `download_metadata.json`.
 ```
 rsef process -h
 Usage: rsef process [OPTIONS]
 
 Options:
 
--i, --input <name>  DOI, path to .txt list of DOIs or path to downloaded_metadata.json [required]
+-i, --input <path>  path to downloaded_metadata.json, to a PDF or to a folder with PDFs
+
+-j --json <path> path to results.json, obtained by executing doiExtractor tool
 
 -o, --output <path>  Output Directory [default: ./]
 
@@ -112,7 +124,7 @@ Options:
 
 The assess command allows for a user to determine whether a given Identifier, in this case ArXiv or DOI,  is bidirectional or not.
 
-The command allows for the user to input a single DOI/ArXiv, a list of identifiers given as a ```.txt```, or a ```processed_metadata.json``` 
+The command allows for the user to input a single DOI/ArXiv, a list of identifiers given as a ```.txt```, or a ```processed_metadata.json```. The resulting information after executing the command will be saved in ```url_search_output.json```.
 
 
 ```text

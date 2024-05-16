@@ -33,16 +33,18 @@ class PaperObj:
         self._implementation_urls = value
 
     def add_implementation_link(self, url, url_type, source_paragraphs=[], extraction_method='regex', frequency=1):
+        if self._implementation_urls is None:
+            self._implementation_urls = []
         duplicate = False
         # Look for the url in the list of implementation urls
         for implementation_url in self._implementation_urls:
-            if implementation_url.url == url:
+            if implementation_url['url'] == url:
                 # Append the extraction method to the list of extraction methods
-                implementation_url.extraction_method.append(extraction_method)
+                implementation_url['extraction_method'].append(extraction_method)
                 
                 # If source paragraphs are provided, append them to the list of source paragraphs
                 if source_paragraphs:
-                    implementation_url.source_paragraphs.extend(source_paragraphs)
+                    implementation_url["source_paragraphs"].extend(source_paragraphs)
                     
                 duplicate = True
                 break
@@ -50,7 +52,7 @@ class PaperObj:
         # If the url is not in the list of implementation urls, add it
         if not duplicate:
             implementation_url = ImplementationUrl(url=url, url_type=url_type, extraction_method=[extraction_method], source_paragraphs=source_paragraphs, frequency=frequency)
-            self._implementation_urls.append(url)
+            self._implementation_urls.append(implementation_url)
 
     @property
     def abstract(self):
@@ -95,7 +97,7 @@ class PaperObj:
     def to_dict(self):
         return {
             'title': self._title,
-            'implementation_urls': [url.to_dict() for url in self._implementation_urls],
+            'implementation_urls': [url for url in self._implementation_urls],
             'doi': self._doi,
             'arxiv': self._arxiv,
             'abstract': self._abstract,

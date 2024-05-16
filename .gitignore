@@ -135,6 +135,8 @@ apis/**/*.json
 # pdfs
 *.pdf
 *.PDF
+PDFs
+
 # modelado
 /modelado/corpus/*
 
@@ -143,8 +145,12 @@ pdf_info_extractor/data_somef/*
 
 #Idea file
 corpus_to_download.txt
-output/*
+output/
 processed_metadata.json
+downloaded_metadata.json
 test/pipeline_folder/*
 .idea
 .DS_Store
+
+# DOI-Extractor-OEG tool
+doiExtractor/

@@ -1,5 +1,5 @@
 from .create_metadata_obj import doi_to_metadataObj
-from .create_downloadedObj import meta_to_dwnldd, pdf_to_downloaded_obj
+from .create_downloadedObj import meta_to_dwnldd, pdf_to_downloaded_obj, save_dict_to_json
 from .downloaded_to_paperObj import downloaded_to_paperObj
 from .paper_to_directionality import check_bidir, check_unidir
 from .paper_obj_utils import paperDict_to_paperObj
@@ -46,7 +46,7 @@ def process_paper(paper, output_dir, bidir=True, unidir=True):
     :returns:
     paperObj with URLs found based on the specified pipeline types
     """
-    log.info(f"Analyzing paper with DOI: {paper.doi}")
+    log.info(f"Analyzing paper with DOI: {paper.doi}")    
 
     if bidir:
         log.info("Checking bidirectional links")
@@ -172,6 +172,10 @@ def dict_to_json(dictionary, output_path):
     path to output JSON
     """
     try:
+        directory = os.path.dirname(output_path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
         with open(output_path, 'w+') as out_file:
             json.dump(dictionary, out_file, indent=4, ensure_ascii=False)
         return output_path
@@ -187,27 +191,27 @@ def load_json(path):
 
 def paper_objects_search(papers_json, output_dir, bidir=True, unidir=True):
     """
-    :param papers_json: JSON of papers, Key: DOI, Value: paperObj (as a dictionary)
+    :param papers_json: JSON of paperObj (as a dictionary)
     :param output_dir: where the JSON will be saved to
     :param bidir: flag to enable bidirectional search
     :param unidir: flag to enable unidirectional search
     :returns:
     path to output JSON
     """
-    result = []
+    file_path = os.path.join(output_dir, "url_search_output.json")
 
     try:
-        paper_dicts = load_json(papers_json)
+        with open(papers_json, 'r', encoding='utf-8', errors='ignore') as f:
+            paper_dicts = json.load(f)
         log.info("Successfully opened JSON")
     except Exception as e:
         log.error("Error while trying to load the Papers JSON")
         log.error(str(e))
         return
 
-    for id in paper_dicts:
-        log.info(f"Analyzing directionality for {id}")
-        paperDict = safe_dic(paper_dicts, id)
-        paper = paperDict_to_paperObj(paperDict)
+    for index, obj in enumerate(paper_dicts):
+        log.info(f"Analyzing directionality for {obj['doi']}")
+        paper = paperDict_to_paperObj(obj)
 
         if not paper:
             log.error("Error while creating paperObj")
@@ -215,10 +219,9 @@ def paper_objects_search(papers_json, output_dir, bidir=True, unidir=True):
 
         paper = process_paper(paper, output_dir, bidir=bidir, unidir=unidir)
 
-        result.append(paper.to_dict())
+        save_dict_to_json(paper.to_dict(), file_path)
 
-    return dict_to_json({'RSEF Output': result}, output_path=os.path.join(output_dir, "url_search_output.json"))
-
+    return file_path
 
 def safe_dic(dic, key):
     try:

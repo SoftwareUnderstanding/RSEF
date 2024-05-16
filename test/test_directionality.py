@@ -136,7 +136,7 @@ class test_bidir(TestCase):
         doi = "10.18653/v1/2021.naacl-main.458"
         paper = doi_to_paper(doi, "pipeline_folder")
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
-        expected_result = None
+        expected_result = paper
         self.assertEquals(result, expected_result)
 
     def test_arxiv_1(self):
@@ -291,7 +291,8 @@ class test_bidir(TestCase):
         }
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
-        self.assertIsNone(result)
+        expected_result = paper
+        self.assertEquals(result, expected_result)
 
     def test_zenodo_bidir_no_url(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -306,7 +307,8 @@ class test_bidir(TestCase):
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
 
-        self.assertIsNone(result)
+        expected_result = paper
+        self.assertEquals(result, expected_result)
 
     def test_zenodo_bidir_broken_url(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -320,7 +322,8 @@ class test_bidir(TestCase):
         }
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
-        self.assertIsNone(result)
+        expected_result = paper
+        self.assertEquals(result, expected_result)
 
     def test_zenodo_bidir_broken_url_1(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -334,7 +337,8 @@ class test_bidir(TestCase):
         }
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
-        self.assertIsNone(result)
+        expected_result = paper
+        self.assertEquals(result, expected_result)
 
     def test_zenodo_bidir_broken_url_2(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -349,7 +353,8 @@ class test_bidir(TestCase):
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
 
-        self.assertIsNone(result)
+        expected_result = paper
+        self.assertEquals(result, expected_result)
 
     def test_prob_(self):
         wipe_directory(PIPELINE_FOLDER)

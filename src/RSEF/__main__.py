@@ -65,6 +65,12 @@ def cli():
 @click.option('--bidir', '-B', is_flag=True, default=False, help="Bidirectionality")
 def assess(input, output, unidir, bidir):
 
+    # Clear the content of the url_search_output.json
+    url_search_output_path = os.path.join(output, "url_search_output.json")
+    if os.path.exists(url_search_output_path):        
+        with open(url_search_output_path, 'w') as file:
+            file.truncate(0)
+
     if input.endswith(".txt") and os.path.exists(input):
         output_path = multi_doi_search(dois_txt=input, output_dir=output,
                                        unidir=unidir, bidir=bidir)
@@ -84,6 +90,13 @@ def assess(input, output, unidir, bidir):
 def download(input, output):
     from .object_creator.create_downloadedObj import doi_to_downloadedJson, dois_txt_to_downloadedJson
     from .utils.regex import str_to_doiID
+
+    # Clear the content of the file downloaded_metadata.json
+    downloaded_metadata_path = os.path.join(output, "downloaded_metadata.json")
+    if os.path.exists(downloaded_metadata_path):        
+        with open(downloaded_metadata_path, 'w') as file:
+            file.truncate(0)
+
     if input.endswith(".txt") and os.path.exists(input):
         dois_txt_to_downloadedJson(dois_txt=input, output_dir=output)
     else:
@@ -95,25 +108,33 @@ def download(input, output):
 
 
 @cli.command()
-@click.option('--input', '-i', required=True, help="DOI, path to .txt list of DOIs or path to downloaded_metadata.json",
+@click.option('--input', '-i', required=False, help="path to downloaded_metadata.json, to a PDF or to a folder with PDFs",
               metavar='<name>')
-@click.option('--output', '-o', default="./", show_default=True, help="Output Directory ", metavar='<path>')
-def process(input, output):
+@click.option('--json', '-j', required=False, help="path to results.json, obtained by executing doiExtractor tool",
+              metavar='<name>')
+@click.option('--output','-o', default="./", show_default=True, help="Output Directory ", metavar='<path>')
+def process(input, json, output):
     from .object_creator.downloaded_to_paperObj import dwnlddJson_to_paperJson, dwnldd_obj_to_paper_json
-    from .object_creator.create_downloadedObj import pdf_to_downloaded_obj
+    from .object_creator.create_downloadedObj import pdf_to_downloaded_obj, json_to_downloaded_obj
 
-    if os.path.isdir(input):
-        _aux_pdfs_to_pp_json(input=input, output=output)
+    if input and json:
+        print("Error: Only one of --i or --j should be provided.")
         return
-    if input.endswith(".json") and os.path.exists(input):
+    if input and os.path.isdir(input):
+        _aux_pdfs_to_pp_json(input= input, output= output)
+        return
+    if input and input.endswith(".json") and os.path.exists(input):
         dwnlddJson_to_paperJson(input, output)
-    if input.endswith(".pdf") and os.path.exists(input):
-        # TODO
-        dwnldd = pdf_to_downloaded_obj(pdf=input, output_dir=output)
-        dwnldd_obj_to_paper_json(download_obj=dwnldd, output_dir=output)
+    if json and json.endswith(".json") and os.path.exists(json):
+        downloaded_metadata = json_to_downloaded_obj(json, output)
+        dwnlddJson_to_paperJson(downloaded_metadata, output)
+    if input and input.endswith(".pdf") and os.path.exists(input):
+        #TODO
+        dwnldd = pdf_to_downloaded_obj(pdf= input, output_dir= output)
+        dwnldd_obj_to_paper_json(download_obj= dwnldd,output_dir= output)
         return
     else:
-        log.error("Error")
+        print("Error")
         return
 
 

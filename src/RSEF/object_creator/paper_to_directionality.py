@@ -49,18 +49,17 @@ def check_paper_directionality(paper, directionality, output_dir):
         first_time = True
         if not (pp_urls := paper.implementation_urls):
             log.info(f"This paper {iden}, it does not have any urls")
-            return None
-
+            return paper
         # Check for zenodo directionality
-        zenodo_urls = [url.url for url in pp_urls if url.url_type == "zenodo"]
+        zenodo_urls = [url['url'] for url in pp_urls if url.get('url_type') == "zenodo"]
         _zenodo_check_directionality(
             paper, zenodo_urls, directionality, iden, first_time, result, output_dir)
 
+        
         # Check for git urls
-        git_urls = [url.url for url in pp_urls if url.url_type == "git"]
+        git_urls =  [url['url'] for url in pp_urls if url.get('url_type') == "git"]
         _git_check_directionality(paper=paper, git_urls=git_urls, directionality=directionality,
                                   iden=iden, first_time=first_time, output_dir=output_dir, result=result)
-
         if len(result.keys()) > 0:
             bidir_urls = [entry for entry in result[iden]]
             for bidir_url_obj in bidir_urls:
