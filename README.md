@@ -98,7 +98,17 @@ The process command allows to extract the abstract and github and zenodo urls fr
 1. A path to downloaded_metadata.json file
 
 2. A path to results.json file, obtained by executing 
-doiExtractor tool (https://github.com/oeg-upm/DOI-Extractor-OEG)
+doiExtractor tool (https://github.com/oeg-upm/DOI-Extractor-OEG).
+This results.json file has the following fromat:
+```
+[
+    {
+        "title": title of the paper,
+        "doi": DOI of the paper,
+        "primary_location": URL of the paper's PDF if exists in OpenAlex
+    },
+]
+```
 
 3. A path to a .pdf file 
 

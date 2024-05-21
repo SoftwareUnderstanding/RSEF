@@ -9,6 +9,7 @@ from ..object_creator.create_metadata_obj import metaDict_to_metaObj, doi_to_met
 from ..extraction.pdf_title_extraction import extract_pdf_title
 from ..metadata.api.openAlex_api_queries import pdf_title_to_meta
 from ..object_creator.create_metadata_obj import extract_arxivID
+from ..repofrompaper.utils.constants import DOWNLOADED_PATH
 from ..utils.regex import str_to_doiID
 
 
@@ -50,7 +51,7 @@ def downloaded_dictionary(dwnldd_obj):
     return dwnldd_obj.to_dict()
 
 def create_downloaded_json(downloaded_dict,output_folder):
-    output_path = output_folder + "/" + "downloaded_metadata.json"
+    output_path = output_folder + DOWNLOADED_PATH
     with open(output_path, 'w+') as out_file:
         json.dump(downloaded_dict, out_file, sort_keys=True, indent=4,
                   ensure_ascii=False)
@@ -107,7 +108,7 @@ def metaJson_to_downloadedJson(meta_json, output_dir):
     path to JSON of downloaded dictionaries
     '''
     dict = metaJson_to_downloaded_dic(meta_json, output_dir)
-    output_path = output_dir + "/" + "downloaded_metadata.json"
+    output_path = output_dir + DOWNLOADED_PATH
     with open(output_path, 'w+') as out_file:
         json.dump(dict, out_file, sort_keys=True, indent=4,
                   ensure_ascii=False)
@@ -139,7 +140,7 @@ def doi_to_downloadedDic(doi,output_dir):
 
 def dois_to_downloadedDics(dois_list, output_dir):
     result = {}
-    output_path = output_dir + "/" + "downloaded_metadata.json"
+    output_path = output_dir + DOWNLOADED_PATH
     if not dois_list:
         return
     for doi in dois_list:
@@ -160,7 +161,7 @@ def dois_txt_to_downloadedDics(dois_txt,output_dir):
 
 def doi_to_downloadedJson(doi,output_dir):
     dict = doi_to_downloadedDic(doi, output_dir)
-    output_path = output_dir + "/" + "downloaded_metadata.json"
+    output_path = output_dir + DOWNLOADED_PATH
     with open(output_path, 'w+') as out_file:
         json.dump(dict, out_file, sort_keys=True, indent=4,
                   ensure_ascii=False)
@@ -169,7 +170,7 @@ def doi_to_downloadedJson(doi,output_dir):
 
 def dois_to_downloadedJson(dois,output_dir):
     dict = dois_to_downloadedDics(dois, output_dir)
-    output_path = output_dir + "/" + "downloaded_metadata.json"
+    output_path = output_dir + DOWNLOADED_PATH
     with open(output_path, 'w+') as out_file:
         json.dump(dict, out_file, sort_keys=True, indent=4,
                   ensure_ascii=False)
@@ -194,12 +195,19 @@ def pdf_to_downloaded_obj(pdf,output_dir):
 
 # Download papers from a json containing title, doi, primary location (PDF's URL)
 def json_to_downloaded_obj(json_data, output_dir):
+    """
+    @Param json_data path to a JSON containing title, doi, primary location (PDF's URL)
+    @Param output_dir where the pdfs will be downloaded and the output JSON will be put
+    -----
+    :returns
+    path to JSON of downloaded papers
+    """
     if not os.path.exists(json_data):
         print(f"Error: JSON file '{json_data}' does not exist.")
         return None
     try:
         # Clear the content of the file downloaded_metadata.json
-        downloaded_metadata_path = os.path.join(output_dir, "downloaded_metadata.json")
+        downloaded_metadata_path = os.path.join(output_dir, DOWNLOADED_PATH)
         if os.path.exists(downloaded_metadata_path):        
             with open(downloaded_metadata_path, 'w') as file:
                 file.truncate(0)
@@ -210,7 +218,7 @@ def json_to_downloaded_obj(json_data, output_dir):
                 print(f"Error: JSON file is empty.")
                 return None
             json_data_list = json.loads(json_data)
-            output_path = output_dir + "/" + "downloaded_metadata.json"
+            output_path = output_dir + DOWNLOADED_PATH
             # Download the papers
             download_by_json(json_data_list, output_path)
 
@@ -228,6 +236,13 @@ def download_from_doi_txt(dois_txt,output_dir):
 
 # Download a paper from it's url
 def download_from_pdf_url(url, output_dir):
+    """
+    @Param url URL of the paper that will be downloaded
+    @Param output_dir where the pdf will be downloaded 
+    -----
+    :returns
+    path to the folder where the pdf is downloaded
+    """
     print(f"Download using PDF's URL: {url}")
     filename = os.path.basename(url)
     if not filename.endswith(".pdf"):
@@ -248,16 +263,26 @@ def download_from_pdf_url(url, output_dir):
         return None
 
     if response.status_code == 200:
-        os.makedirs(output_dir, exist_ok=True)
-        with open(output_path, 'wb') as file:
-            file.write(response.content)
-        return output_path
+        content_type = response.headers.get('Content-Type')
+        if content_type == 'application/pdf':
+            os.makedirs(output_dir, exist_ok=True)
+            with open(output_path, 'wb') as file:
+                file.write(response.content)
+            return output_path
+        else:
+            print(f"The content at {url} is not a PDF. Content-Type is {content_type}")
+            print("-------------------------------")
+            return None
     else:
         print(f"Error downloading PDF from {url}: Status code {response.status_code}")
         print("-------------------------------")
         return None
 
 def download_by_json(json_data_list, output_path):
+    """
+    @Param json_data_list object containing the JSON content of the papers to download
+    @Param output_dir path where the output JSON will be put
+    """
     for item in json_data_list:
         name = item.get("title")
         doi = item.get("doi")
@@ -283,10 +308,9 @@ def download_by_json(json_data_list, output_path):
             try:
                 downloadedMeta = doi_to_metadataObj(doi)
                 if downloadedMeta:
-                    meta_to_dwnldd(downloadedMeta, "PDFs")
-                    downloadedObj = DownloadedObj(name, doi, downloadedMeta.arxiv, os.path.basename(primary_location), downloaded).to_dict()
+                    downloadedObj = meta_to_dwnldd(downloadedMeta, ".")
                     if downloadedObj:
-                        save_dict_to_json(downloadedObj, output_path)
+                        save_dict_to_json(downloadedObj.to_dict(), output_path)
                 else:
                     print("Couldn't find the ID in OpenAlex")
             except Exception as e:
@@ -294,6 +318,10 @@ def download_by_json(json_data_list, output_path):
             print("-------------------------------")
 
 def save_dict_to_json(obj, json_path):
+    """
+    @Param obj object that will be saved in the JSON
+    @Param json_path path to the JSON where obj will be written
+    """
     try:
         directory = os.path.dirname(json_path)
         if not os.path.exists(directory):
