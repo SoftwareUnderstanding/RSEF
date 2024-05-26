@@ -21,7 +21,7 @@ def find_link_in_references(reference_numbers: List[str], references: Dict[str, 
             if repo_links:
                 link = repo_links[0]
                 print(f'Found {link} in references dictionary using {ref} reference number')
-                return link, references[ref]
+                return link, ref
     return None, None
 
 

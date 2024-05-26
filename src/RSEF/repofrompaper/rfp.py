@@ -51,11 +51,14 @@ def extract_repo_links_from_pdf(pdf_path: str) -> Tuple[List[str], str]:
             number_sources[sentence] = {'footnotes': numbers+extra_chars, 'references': square_brackets}
 
     if not link and reference_numbers:  # No link found in best matches, look for references or footnotes
-        link, reference = find_link_in_references(reference_numbers, references)
+        link, ref = find_link_in_references(reference_numbers, references)
         
         # If the link is found, store the source paragraph by looking for the reference number
-        if link and reference:
-            source_para = reference
+        if link and ref:
+            for key, value in number_sources.items():
+                if ref in value['references']:
+                    source_para = key
+                    break               
 
     if not link and all_footnotes:
         # Remove duplicates in all_footnotes while keeping order
