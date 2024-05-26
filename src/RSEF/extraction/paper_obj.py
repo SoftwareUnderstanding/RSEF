@@ -50,7 +50,7 @@ class PaperObj:
         # If the url is not in the list of implementation urls, add it
         if not duplicate:
             implementation_url = ImplementationUrl(url=url, url_type=url_type, extraction_method=[extraction_method], source_paragraphs=source_paragraphs, frequency=frequency)
-            self._implementation_urls.append(url)
+            self._implementation_urls.append(implementation_url)
 
     @property
     def abstract(self):

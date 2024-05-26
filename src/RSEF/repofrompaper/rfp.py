@@ -17,6 +17,7 @@ def extract_repo_links_from_pdf(pdf_path: str) -> Tuple[List[str], str]:
     best_sentences = get_top_sentences(sentences)
 
     link, all_footnotes, reference_numbers = '', [], []
+    source_para, number_sources = '', {}
 
     for sentence in best_sentences:
         # Look for github links
@@ -24,6 +25,7 @@ def extract_repo_links_from_pdf(pdf_path: str) -> Tuple[List[str], str]:
 
         if repo_links:
             link = repo_links[0]
+            source_para = sentence
             break
         else:
             # Use regular expression to find numbers attached to words
@@ -44,18 +46,35 @@ def extract_repo_links_from_pdf(pdf_path: str) -> Tuple[List[str], str]:
             # Use regular expression to find special characters used as footnotes
             extra_chars = list(set(re.findall(r'[†‡*]', sentence)))
             all_footnotes.extend(numbers+extra_chars)
+            
+            # Store the sentence and its footnotes and references
+            number_sources[sentence] = {'footnotes': numbers+extra_chars, 'references': square_brackets}
 
     if not link and reference_numbers:  # No link found in best matches, look for references or footnotes
-        link = find_link_in_references(reference_numbers, references)
+        link, ref = find_link_in_references(reference_numbers, references)
+        
+        # If the link is found, store the source paragraph by looking for the reference number
+        if link and ref:
+            for key, value in number_sources.items():
+                if ref in value['references']:
+                    source_para = key
+                    break               
 
     if not link and all_footnotes:
         # Remove duplicates in all_footnotes while keeping order
         all_footnotes = list(dict.fromkeys(all_footnotes))
-        link = find_link_in_footnotes(all_footnotes, footnotes)
+        link, footnote = find_link_in_footnotes(all_footnotes, footnotes)
 
         if not link:
             sentences_with_footnote = get_sentences_with_footnote(
                 all_footnotes, sentences, best_sentences)
-            link = find_link_in_sentences(sentences_with_footnote)
-
-    return clean_final_link(link), 'sample source paragraph' # TODO: Implement source paragraph extraction
+            link, footnote = find_link_in_sentences(sentences_with_footnote)
+            
+        # If the link is found, store the source paragraph by looking for the footnote number
+        if link and footnote:
+            for key, value in number_sources.items():
+                if footnote in value['footnotes']:
+                    source_para = key
+                    break
+                
+    return clean_final_link(link), source_para
