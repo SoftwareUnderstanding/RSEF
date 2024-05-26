@@ -21,8 +21,8 @@ def find_link_in_references(reference_numbers: List[str], references: Dict[str, 
             if repo_links:
                 link = repo_links[0]
                 print(f'Found {link} in references dictionary using {ref} reference number')
-                return link
-    return None
+                return link, references[ref]
+    return None, None
 
 
 def find_link_in_footnotes(all_footnotes: List[str], footnotes: Dict[str, str]) -> Optional[str]:
@@ -32,25 +32,25 @@ def find_link_in_footnotes(all_footnotes: List[str], footnotes: Dict[str, str]) 
         if f in footnotes:
             link = footnotes[f]
             print(f'Found {link} in footnotes dictionary using footnote {f}')
-            return link
-    return None
+            return link, f
+    return None, None
 
 
 def find_link_in_sentences(sentences_with_footnote: List[Tuple[str, str]]) -> Optional[str]:
     """Find the link in the sentences with footnote for the given footnotes"""
     # Look for link attached to the footnote in sentence
-    for sentence_with_number, footnote_link in sentences_with_footnote:
+    for sentence_with_number, footnote_link, footnote in sentences_with_footnote:
         if footnote_link:
             link = footnote_link
-            return link
+            return link, footnote
 
     # Look for sentence that contains the footnote
-    for sentence_with_number, footnote_link in sentences_with_footnote:
+    for sentence_with_number, footnote_link, footnote in sentences_with_footnote:
         repo_links = find_repo_links(sentence_with_number)
         if repo_links:
             link = repo_links[0]
-            return link
-    return None
+            return link, footnote
+    return None, None
 
 
 def extract_link_by_number(sentence: str, target_number: str) -> str:
@@ -75,6 +75,6 @@ def get_sentences_with_footnote(footnotes: List[str], sentences: List[str], best
                     and ('github' in sentence or 'gitlab' in sentence) \
                     and sentence not in best_sentences:
                 link = extract_link_by_number(sentence, str(footnote))
-                sentences_with_footnote.append((sentence, link))
+                sentences_with_footnote.append((sentence, link, str(footnote)))
 
     return sentences_with_footnote
