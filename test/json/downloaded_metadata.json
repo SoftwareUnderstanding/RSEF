@@ -1,9 +1,9 @@
-{
-    "10.1016/j.compbiomed.2019.05.002": {
-        "arxiv": "1906.03720",
-        "doi": "10.1016/j.compbiomed.2019.05.002",
-        "file_name": "10-DOT-1016_j-DOT-compbiomed-DOT-2019-DOT-05-DOT-002.pdf",
-        "file_path": "../test/pipeline_folder/PDFs/10-DOT-1016_j-DOT-compbiomed-DOT-2019-DOT-05-DOT-002.pdf",
-        "title": "Association of genomic subtypes of lower-grade gliomas with shape features automatically extracted by a deep learning algorithm"
+[
+    {
+        "title": "Traffic Optimization Through Waiting Prediction and Evolutive Algorithms",
+        "doi": "10.9781/ijimai.2023.12.001",
+        "arxiv": null,
+        "file_name": "ijimai.2023.12.001",
+        "file_path": "PDFs\\ijimai.2023.12.001.pdf"
     }
-}
+]

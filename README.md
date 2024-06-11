@@ -63,7 +63,6 @@ Find and assess Research Software within Research papers.
 Usage:
 1. (assess) Assess doi for unidirectionality or bidirectionality
 2. (download) Download PDF (paper) from a doi or list
-3. (process)  Process downloaded pdf to find urls and abstract
 
 Options:
 --version Show the version and exit.
@@ -72,13 +71,12 @@ Options:
 Commands:
 	assess
 	download
-	process
  
 ```
 
 ### Download
 
-The download command allows for a user to download the pdf with its metadata given an Identifier: ArXiv or DOI.  Alongside the PDFs folder there will be a `download_metadata.json` which will have the Title, DOI, ArXiv and filename/filepath for each paper downloaded.
+The download command allows for a user to download the pdf with its metadata given an Identifier: ArXiv or DOI.  Alongside the PDFs folder there will be a `downloaded_metadata.json` which will have the Title, DOI, ArXiv and filename/filepath for each paper downloaded.
 ```
 rsef download -h 
 Usage: rsef download [OPTIONS]
@@ -92,14 +90,21 @@ Options:
 -h, --help Show this message and exit.
 ```
 
-### Processed
+### Assess
 
-The process command allows to extract the abstract and github and zenodo urls from a paper or a list of papers. This command accepts different inputs:
-1. A path to downloaded_metadata.json file
+The assess command allows for a user to determine whether a given Identifier, in this case ArXiv or DOI,  is bidirectional or not. This command accepts different inputs:
 
-2. A path to results.json file, obtained by executing 
+1. A single DOI/ArXiv
+
+2. A list of identifiers given as a ```.txt```
+
+3. A path to downloaded_metadata.json file
+
+4. A path to processed_metadata.json file
+
+5. A path to results.json file, obtained by executing 
 doiExtractor tool (https://github.com/oeg-upm/DOI-Extractor-OEG).
-This results.json file has the following fromat:
+This results.json file has the following format:
 ```
 [
     {
@@ -109,32 +114,7 @@ This results.json file has the following fromat:
     },
 ]
 ```
-
-3. A path to a .pdf file 
-
-4. A path to a folder fith PDFs
-
-The output of the execution  is saved in a json named ```processed_metadata.json```. In addition when passing the path to results.json file, this command will download the papers in the PDFs folder and create a `download_metadata.json`.
-```
-rsef process -h
-Usage: rsef process [OPTIONS]
-
-Options:
-
--i, --input <path>  path to downloaded_metadata.json, to a PDF or to a folder with PDFs
-
--j --json <path> path to results.json, obtained by executing doiExtractor tool
-
--o, --output <path>  Output Directory [default: ./]
-
--h, --help Show this message and exit.
-```
-
-### Assess
-
-The assess command allows for a user to determine whether a given Identifier, in this case ArXiv or DOI,  is bidirectional or not.
-
-The command allows for the user to input a single DOI/ArXiv, a list of identifiers given as a ```.txt```, or a ```processed_metadata.json```. The resulting information after executing the command will be saved in ```url_search_output.json```.
+The resulting information after executing the command will be saved in ```output/url_search_output.json```.
 
 
 ```text

@@ -207,7 +207,7 @@ def json_to_downloaded_obj(json_data, output_dir):
         return None
     try:
         # Clear the content of the file downloaded_metadata.json
-        downloaded_metadata_path = os.path.join(output_dir, DOWNLOADED_PATH)
+        downloaded_metadata_path = output_dir + DOWNLOADED_PATH
         if os.path.exists(downloaded_metadata_path):        
             with open(downloaded_metadata_path, 'w') as file:
                 file.truncate(0)
@@ -295,10 +295,10 @@ def download_by_json(json_data_list, output_path):
                 if doi is not None and doi.startswith("10."):
                     formatted_doi = 'https://doi.org/' + doi
                     downloadedMeta = doi_to_metadataObj(formatted_doi)
-                    downloadedObj = DownloadedObj(name, doi, downloadedMeta.arxiv, os.path.basename(primary_location), downloaded).to_dict()
+                    downloadedObj = DownloadedObj(title=name, doi=doi, arxiv=downloadedMeta.arxiv, file_name=os.path.basename(primary_location), file_path=downloaded).to_dict()
                 else:
+                    downloadedObj = DownloadedObj(title=name, doi="", arxiv="", file_name=os.path.basename(primary_location), file_path=downloaded).to_dict()
                     print("-------------------------------")
-                    continue
                 if downloadedObj:
                     save_dict_to_json(downloadedObj, output_path)
                     
@@ -322,16 +322,16 @@ def save_dict_to_json(obj, json_path):
     @Param obj object that will be saved in the JSON
     @Param json_path path to the JSON where obj will be written
     """
+    json_data = []
+
     try:
         directory = os.path.dirname(json_path)
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        json_data = []
         if os.path.exists(json_path) and os.path.getsize(json_path) > 0:
             with open(json_path, 'r', encoding='utf-8', errors='ignore') as file:
                 json_data = json.load(file)
-
         json_data.append(obj)
     except Exception as e:
         print("Error reading JSON data:", e)
@@ -344,6 +344,45 @@ def save_dict_to_json(obj, json_path):
         print("-------------------------------")
     except Exception as e:
         print("Error appending JSON data to file:", e)
+
+def remove_empty_fields_from_file(file_path):
+    """
+    Removes all the empty values from a JSON file.
+    
+    @Param file_path: path to the JSON file to process.
+    """
+    if not os.path.isfile(file_path):
+        raise FileNotFoundError(f"El archivo {file_path} no existe.")
+    
+    with open(file_path, 'r', encoding='utf-8') as file:
+        json_data = json.load(file)
+    
+    remove_empty_fields(json_data)
+    
+    with open(file_path, 'w', encoding='utf-8') as file:
+        json.dump(json_data, file, indent=4, ensure_ascii=False)
+
+def remove_empty_fields(json_obj):
+        """
+        Removes all the empty values from a JSON file. 
+
+        @Param json_obj: JSON object to process.
+        """
+        if isinstance(json_obj, dict):
+            keys_to_delete = []
+            for key, value in json_obj.items():
+                if value == "":
+                    keys_to_delete.append(key)
+                elif isinstance(value, (dict, list)):
+                    remove_empty_fields(value)
+            
+            for key in keys_to_delete:
+                del json_obj[key]
+
+        elif isinstance(json_obj, list):
+            for item in json_obj:
+                remove_empty_fields(item)
+    
 
 def safe_dic(dic, key):
     try:

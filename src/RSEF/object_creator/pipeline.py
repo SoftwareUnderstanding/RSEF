@@ -1,5 +1,6 @@
+from ..object_creator.extraction_method import ExtractionMethod
 from .create_metadata_obj import doi_to_metadataObj
-from .create_downloadedObj import meta_to_dwnldd, pdf_to_downloaded_obj, save_dict_to_json
+from .create_downloadedObj import meta_to_dwnldd, pdf_to_downloaded_obj, remove_empty_fields_from_file, save_dict_to_json
 from .downloaded_to_paperObj import downloaded_to_paperObj
 from .paper_to_directionality import check_bidir, check_unidir
 from .paper_obj_utils import paperDict_to_paperObj
@@ -46,21 +47,24 @@ def process_paper(paper, output_dir, bidir=True, unidir=True):
     :returns:
     paperObj with URLs found based on the specified pipeline types
     """
-    log.info(f"Analyzing paper with DOI: {paper.doi}")    
+    if paper.doi:
+        log.info(f"Analyzing paper with DOI: {paper.doi}")    
 
-    if bidir:
-        log.info("Checking bidirectional links")
-        paper = check_bidir(paper, output_dir)
+        if bidir:
+            log.info("Checking bidirectional links")
+            paper = check_bidir(paper, output_dir)
 
-    if unidir:
-        log.info("Checking unidirectional links")
-        repo_link, source_para = extract_repo_links_from_pdf(paper.file_path)
-        if repo_link:
-            paper.add_implementation_link(repo_link, 'git', source_paragraphs=[source_para],
-                                          extraction_method='unidir')
-
-    log.info(f"Finished analyzing paper with DOI: {paper.doi}")
+        if unidir:
+            log.info("Checking unidirectional links")
+            repo_link, source_para = extract_repo_links_from_pdf(paper.file_path)
+            if repo_link:
+                extraction_method = ExtractionMethod(type='unidir', location=paper.file_path , location_type='PAPER', source_paragraph=source_para)
+                paper.add_implementation_link(repo_link, 'git', extraction_method=extraction_method)
+                
+        log.info(f"Finished analyzing paper with DOI: {paper.doi}")
+    
     return paper
+    
 
 
 def single_doi_pipeline(doi, output_dir, bidir=True, unidir=True):
@@ -219,8 +223,20 @@ def paper_objects_search(papers_json, output_dir, bidir=True, unidir=True):
 
         paper = process_paper(paper, output_dir, bidir=bidir, unidir=unidir)
 
-        save_dict_to_json(paper.to_dict(), file_path)
+        paper.remove_regex()
 
+        try:
+            paper_dict = paper.to_dict()
+            save_dict_to_json(paper_dict, file_path)
+        except Exception as e:
+            log.error(f"Error while converting paperObj to dict for {obj['doi']}: {e}")
+            continue
+
+    try:
+        remove_empty_fields_from_file(file_path)
+    except Exception as e:
+        log.error(f"Error while deleting the empty values from JSON: {e}")
+        
     return file_path
 
 def safe_dic(dic, key):

@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+
+from ..object_creator.extraction_method import ExtractionMethod
 from ..extraction.pdf_extraction_tika import get_possible_abstract, extract_urls, raw_read_pdf, raw_to_list
 from ..extraction.paper_obj import PaperObj
 from ..object_creator.create_downloadedObj import downloadedDic_to_downloadedObj, save_dict_to_json
@@ -24,7 +26,9 @@ def downloaded_to_paperObj(downloadedObj):
         if urls_dict:
             for url_type, url_list in urls_dict.items():
                 for url in url_list:
-                    implementation_url = ImplementationUrl(url=url['url'], url_type=url_type, frequency=url['#_appearances'], extraction_method=['regex'], source_paragraphs=[])
+                    extraction_method = ExtractionMethod(type="regex", location="", location_type="", source="", source_paragraph="")
+                    implementation_url = ImplementationUrl(identifier=url['url'], type=url_type, paper_frequency=url['#_appearances'], extraction_methods=[extraction_method.to_dict()]
+                    )
                     urls.append(implementation_url.to_dict())
         abstract = get_possible_abstract(pdf_data_list)
         title = downloadedObj.title
@@ -87,11 +91,6 @@ def dwnlddJson_to_paperJson(dwnldd_json, output_dir):
     :return
     Path to the paper JSON
     """
-    # Clear the content of the file downloaded_metadata.json
-    processed_metadata_path = os.path.join(output_dir, "processed_metadata.json")
-    if os.path.exists(processed_metadata_path):        
-        with open(processed_metadata_path, 'w') as file:
-            file.truncate(0)
     dwnlddJson_to_paper_dic(dwnldd_json, output_dir)
     return output_dir
 
