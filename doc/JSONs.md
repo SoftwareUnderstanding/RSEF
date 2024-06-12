@@ -47,9 +47,14 @@ The `processed_metadata.json` file contains an array of objects, each representi
 | **type**             | String | The type of extraction method                           | regex, unidir and bidir | regex, unidir, bidir                                                        | `"regex"`                            |
 | **location**         | String | The location in the document where the URL was found    | unidir, bidir           | ZENODO, DESCRIPTION, RELATED_PAPERS for bidir and the paper path for unidir | `"DESCRIPTION"`                      |
 | **location_type**    | String | The type of location in the document                    | unidir, bidir           | DOI, ARXIV, CFF, BIBTEX, TEXT for bidir and PAPER for unidir                | `"DOI"`                              |
-| **source**           | String | The source used for extraction                          | bidir                   | PAPER, SSKG, SOMEF                                                          | `"SOMEF"`                            |
+| **source**           | String | The source used for extraction                          | unidir, bidir                   | PAPER, RSEF, SOMEF                                                          | `"SOMEF"`                            |
 | **source_paragraph** | String | The paragraph in the source where the URL was found     | unidir                  |                                                                             | `"The code is available online."`    |
 
+```"source": "PAPER"``` is present in unidirectional relationships and means that the url has been found in the paper's PDF.
+
+```"source": "RSEF"```means that RSEF has checked that a paper has a record in Zenodo, and that the paper's DOI, arxivid or title is mentioned in the Zenodo record. This is only for bidirectional relationships.
+
+```"source": "SOMEF"```means that for a GitHub repository found in the paper, the repository has been examined using SOMEF to search for citations or references to the paper. The analysis found a relationship between the paper and the repository, confirming a bidirectional relationship. This is only for bidirectional relationships.
 <br><br>
 
 ## url_search_output.json

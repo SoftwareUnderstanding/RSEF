@@ -26,7 +26,7 @@ def is_it_bidir(paper_obj, zenodo_url: str, output_dir):
                 "location": "ZENODO",
                 "id_type": "DOI",
                 "identifier": paper_obj.doi,
-                "source": "SSKG"
+                "source": "RSEF"
             })
 
         if arxiv_in_zenodo(paper_obj, record_text):
@@ -34,7 +34,7 @@ def is_it_bidir(paper_obj, zenodo_url: str, output_dir):
                 "location": "ZENODO",
                 "id_type": "ARXIV",
                 "identifier": paper_obj.arxiv,
-                "source": "SSKG"
+                "source": "RSEF"
             })
 
         if title_in_zenodo(paper_obj, record_text):
@@ -42,7 +42,7 @@ def is_it_bidir(paper_obj, zenodo_url: str, output_dir):
                 "location": "ZENODO",
                 "id_type": "TITLE",
                 "identifier": paper_obj.title,
-                "source": "SSKG"
+                "source": "RSEF"
             })
 
         github_repo = set(get_github_from_zenodo(record_text))
