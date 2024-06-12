@@ -1,4 +1,5 @@
 # TODO fix imports
+from ..object_creator.extraction_method import ExtractionMethod
 from ..extraction.somef_extraction.somef_extractor import download_repo_metadata
 from ..modelling.git_bidirectionality import is_it_bidir as git_is_it_bidir
 from ..modelling.zenodo_bidirectionality import is_it_bidir as zenodo_is_it_bidir
@@ -40,7 +41,6 @@ def _get_identifier(paper):
 
 def check_paper_directionality(paper, directionality, output_dir):
     result = {}
-
     if not (iden := _get_identifier(paper)):
         log.error(
             "check_paper_directionality: No identifier found for this paper")
@@ -49,26 +49,26 @@ def check_paper_directionality(paper, directionality, output_dir):
         first_time = True
         if not (pp_urls := paper.implementation_urls):
             log.info(f"This paper {iden}, it does not have any urls")
-            return None
+            return paper
 
         # Check for zenodo directionality
-        zenodo_urls = [url.url for url in pp_urls if url.url_type == "zenodo"]
+        zenodo_urls = [url.identifier for url in pp_urls if url.type == "zenodo"]
         _zenodo_check_directionality(
             paper, zenodo_urls, directionality, iden, first_time, result, output_dir)
-
+        
         # Check for git urls
-        git_urls = [url.url for url in pp_urls if url.url_type == "git"]
+        git_urls =  [url.identifier for url in pp_urls if url.type == "git"]
         _git_check_directionality(paper=paper, git_urls=git_urls, directionality=directionality,
                                   iden=iden, first_time=first_time, output_dir=output_dir, result=result)
-
+        
         if len(result.keys()) > 0:
-            bidir_urls = [entry for entry in result[iden]]
-            for bidir_url_obj in bidir_urls:
-                url_type = "git" if "git" in bidir_url_obj['url'] else "zenodo"
-                source_para = [x['location']
-                               for x in bidir_url_obj['bidirectional']]
+            urls = [entry for entry in result[iden]]
+            for url_obj in urls:
+                url_type = "git" if "git" in url_obj['url'] else "zenodo"
+                bdir_info = url_obj['bidirectional'][0]
+                extraction_method = ExtractionMethod(type='bidir', location=bdir_info['location'], location_type=bdir_info['id_type'], source=bdir_info['source'])
                 paper.add_implementation_link(
-                    bidir_url_obj['url'], url_type, source_paragraphs=source_para, extraction_method='bidir')
+                    url_obj['url'], url_type, extraction_method)
 
         return paper
 

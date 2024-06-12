@@ -7,6 +7,9 @@ REPO_REGEXES = [GITHUB_REGEX, GITLAB_REGEX]
 # Paths
 MODEL_PATH = 'oeg/SciBERT-Repository-Proposal'
 TOKENIZER_PATH = 'allenai/scibert_scivocab_uncased'
+DOWNLOADED_PATH = '/downloaded_metadata.json'
+PROCESSED_PATH = '/processed_metadata.json'
+ASSES_PATH = '/url_search_output.json'
 
 # Limits
 FOOTNOTE_NUM_LIMIT = 30  # Numbers higher than this are not considered as footnotes

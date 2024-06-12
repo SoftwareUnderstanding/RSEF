@@ -1,9 +1,10 @@
 from ..object_creator.implementation_url import ImplementationUrl
 from ..utils.regex import str_to_doiID, str_to_arxivID
+
 class PaperObj:
     def __init__(self, title, implementation_urls, doi, arxiv, abstract, file_name, file_path):
         self._title = title
-        self._implementation_urls = implementation_urls
+        self._implementation_urls = [ImplementationUrl.from_dict(url) for url in implementation_urls]
         self._doi = str_to_doiID(doi)
         self._arxiv = str_to_arxivID(arxiv)
         self._file_name = file_name
@@ -30,27 +31,41 @@ class PaperObj:
 
     @implementation_urls.setter
     def implementation_urls(self, value):
-        self._implementation_urls = value
+        self._implementation_urls = [ImplementationUrl.from_dict(url) for url in value]
 
-    def add_implementation_link(self, url, url_type, source_paragraphs=[], extraction_method='regex', frequency=1):
+    def add_implementation_link(self, url, url_type, extraction_method, frequency=1):
+        if self._implementation_urls is None:
+            self._implementation_urls = []
         duplicate = False
         # Look for the url in the list of implementation urls
         for implementation_url in self._implementation_urls:
-            if implementation_url.url == url:
-                # Append the extraction method to the list of extraction methods
-                implementation_url.extraction_method.append(extraction_method)
-                
-                # If source paragraphs are provided, append them to the list of source paragraphs
-                if source_paragraphs:
-                    implementation_url.source_paragraphs.extend(source_paragraphs)
-                    
+            if implementation_url.identifier == url:
+                implementation_url.extraction_methods.append(extraction_method.to_dict())
                 duplicate = True
                 break
-            
-        # If the url is not in the list of implementation urls, add it
         if not duplicate:
-            implementation_url = ImplementationUrl(url=url, url_type=url_type, extraction_method=[extraction_method], source_paragraphs=source_paragraphs, frequency=frequency)
-            self._implementation_urls.append(implementation_url)
+            new_url = ImplementationUrl(
+                identifier=url,
+                type=url_type,
+                paper_frequency=frequency,
+                extraction_methods=extraction_method
+            )
+            self._implementation_urls.append(new_url)
+
+    def remove_regex(self):
+        try:
+            self._implementation_urls = [
+                url for url in self._implementation_urls if not self.has_only_regex(url)
+            ]
+        except Exception as e:
+            print(f"An error occurred in remove_regex: {e}")
+        
+    def has_only_regex(self, implementation_url):
+        try:
+            return all(method['type'] == 'regex' for method in implementation_url.extraction_methods)
+        except Exception as e:
+            print(f"An error occurred in _has_only_regex: {e}")
+            return False
 
     @property
     def abstract(self):

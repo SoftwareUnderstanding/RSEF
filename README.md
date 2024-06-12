@@ -63,7 +63,6 @@ Find and assess Research Software within Research papers.
 Usage:
 1. (assess) Assess doi for unidirectionality or bidirectionality
 2. (download) Download PDF (paper) from a doi or list
-3. (process)  Process downloaded pdf to find urls and abstract
 
 Options:
 --version Show the version and exit.
@@ -72,13 +71,12 @@ Options:
 Commands:
 	assess
 	download
-	process
  
 ```
 
 ### Download
 
-The download command allows for a user to download the pdf with its metadata given an Identifier: ArXiv or DOI.  Alongside the PDFs folder there will be a `download_metadata.json` which will have the Title, DOI, ArXiv and filename/filepath for each paper downloaded.
+The download command allows for a user to download the pdf with its metadata given an Identifier: ArXiv or DOI.  Alongside the PDFs folder there will be a `downloaded_metadata.json` which will have the Title, DOI, ArXiv and filename/filepath for each paper downloaded.
 ```
 rsef download -h 
 Usage: rsef download [OPTIONS]
@@ -92,27 +90,31 @@ Options:
 -h, --help Show this message and exit.
 ```
 
-### Processed
-
-The process command allows to take Identifier, or downloaded paper and process it to extract the abstract and github and zenodo urls. These will be saved in a json named ```processed_metadata.json```
-```
-rsef process -h
-Usage: rsef process [OPTIONS]
-
-Options:
-
--i, --input <name>  DOI, path to .txt list of DOIs or path to downloaded_metadata.json [required]
-
--o, --output <path>  Output Directory [default: ./]
-
--h, --help Show this message and exit.
-```
-
 ### Assess
 
-The assess command allows for a user to determine whether a given Identifier, in this case ArXiv or DOI,  is bidirectional or not.
+The assess command allows for a user to determine whether a given Identifier, in this case ArXiv or DOI,  is bidirectional or not. This command accepts different inputs:
 
-The command allows for the user to input a single DOI/ArXiv, a list of identifiers given as a ```.txt```, or a ```processed_metadata.json``` 
+1. A single DOI/ArXiv
+
+2. A list of identifiers given as a ```.txt```
+
+3. A path to downloaded_metadata.json file
+
+4. A path to processed_metadata.json file
+
+5. A path to results.json file, obtained by executing 
+doiExtractor tool (https://github.com/oeg-upm/DOI-Extractor-OEG).
+This results.json file has the following format:
+```
+[
+    {
+        "title": title of the paper,
+        "doi": DOI of the paper,
+        "primary_location": URL of the paper's PDF if exists in OpenAlex
+    },
+]
+```
+The resulting information after executing the command will be saved in ```output/url_search_output.json```.
 
 
 ```text
