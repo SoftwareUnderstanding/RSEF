@@ -145,7 +145,7 @@ pdf_info_extractor/data_somef/*
 
 #Idea file
 corpus_to_download.txt
-output/JSONs
+output/*
 processed_metadata.json
 downloaded_metadata.json
 test/pipeline_folder/*

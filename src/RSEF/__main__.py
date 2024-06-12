@@ -87,12 +87,7 @@ def assess(input, output, unidir, bidir):
                 papers_json=input, output_dir=output, unidir=unidir, bidir=bidir)
             
         elif isinstance(data, list) and 'primary_location' in data[0]:
-            # DOI-Extractor-OEG JSON
-            existing_oeg_papers = 'src/RSEF/existing_oeg_papers/papers.json'
-        
-            # Add existing papers from OEG
-            merge_json_files(input, existing_oeg_papers)
-
+            # DOI-Extractor-OEG JSON        
             processed_papers = process(input= None, json=input, output=output)
             processed_papers_path = processed_papers + PROCESSED_PATH
             output_path = paper_objects_search(
@@ -196,28 +191,3 @@ def _aux_pdfs_to_pp_json(input, output):
         log.error(f"an error occurred: {str(e)}")
         log.error(str(e))
 
-
-def merge_json_files(input_path, existing_oeg_papers):
-    """
-    Merges existing OEG papers into an input JSON file.
-    
-    @Param input_path (str): Path to the input JSON file.
-    @Param existing_path (str): Path to the existing papers JSON file.
-    """
-    try:
-        with open(input_path, 'r', encoding='utf-8') as f:
-            input_data = json.load(f)    
-        with open(existing_oeg_papers, 'r', encoding='utf-8') as f:
-            existing_data = json.load(f)
-
-        if isinstance(input_data, list) and isinstance(existing_data, list):
-            input_data.extend(existing_data)
-        elif isinstance(input_data, dict) and isinstance(existing_data, dict):
-            input_data.update(existing_data)
-        else:
-            raise ValueError("JSON structures do not match for merging")
-
-        with open(input_path, 'w', encoding='utf-8') as f:
-            json.dump(input_data, f, ensure_ascii=False, indent=4)  
-    except Exception as e:
-        log.error(f"Error while merging the JSONs: {e}")

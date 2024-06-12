@@ -42,24 +42,6 @@ The `processed_metadata.json` file contains an array of objects, each representi
 
 ### Extraction Method
 
-| Attribute            | Type   | Description                                           | Values    | Example                           |
-|----------------------|--------|-------------------------------------------------------|-----------|-----------------------------------|
-| **type**             | String | The type of extraction method                         | regex     | `"regex"`                         |
-| **location**         | String | The location in the document where the URL was found  |           | `"DESCRIPTION"`                   |
-| **location_type**    | String | The type of location in the document                  |           | `"DOI"`                           |
-| **source**           | String | The source used for extraction                        |           | `"SOMEF"`                         |
-| **source_paragraph** | String | The paragraph in the source where the URL was found   |           | `"The code is available online."` |
-
-<br><br>
-
-## url_search_output.json
-
-The `url_search_output.json` file contains an array of objects, each representing a paper after searching for unidirectional links, bidirectional links, or both.
-
-The resulting JSON has the same structure as the `processed_metadata.json` but the `type` attribute of the Extraction Method can be "unidir" or "bidir", not only "regex". See table below:
-
-### Extraction Method
-
 | Attribute            | Type   | Description                                             | Included in             | Values                                                                      | Example                              |
 |----------------------|--------|---------------------------------------------------------|-------------------------|-----------------------------------------------------------------------------|--------------------------------------|
 | **type**             | String | The type of extraction method                           | regex, unidir and bidir | regex, unidir, bidir                                                        | `"regex"`                            |
@@ -67,3 +49,11 @@ The resulting JSON has the same structure as the `processed_metadata.json` but t
 | **location_type**    | String | The type of location in the document                    | unidir, bidir           | DOI, ARXIV, CFF, BIBTEX, TEXT for bidir and PAPER for unidir                | `"DOI"`                              |
 | **source**           | String | The source used for extraction                          | bidir                   | PAPER, SSKG, SOMEF                                                          | `"SOMEF"`                            |
 | **source_paragraph** | String | The paragraph in the source where the URL was found     | unidir                  |                                                                             | `"The code is available online."`    |
+
+<br><br>
+
+## url_search_output.json
+
+The `url_search_output.json` file contains an array of objects, each representing a paper after searching for unidirectional links, bidirectional links, or both.
+
+The resulting JSON has the same structure as the `processed_metadata.json`
