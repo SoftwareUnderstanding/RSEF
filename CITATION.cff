@@ -13,17 +13,17 @@ cff-version: 1.2.0
 preferred-citation:
   authors:
     - family-names: Garijo
-    given-names: Daniel
-    orcid: "https://orcid.org/0000-0003-0454-7145"
+      given-names: Daniel
+      orcid: "https://orcid.org/0000-0003-0454-7145"
     - family-names: Arroyo
-    given-names: Miguel
+      given-names: Miguel
     - family-names: Gonzalez
-    given-names: Esteban
-    orcid: "https://orcid.org/0000-0003-4112-6825"
+      given-names: Esteban
+      orcid: "https://orcid.org/0000-0003-4112-6825"
     - family-names: Treude
-    given-names: Christoph
+      given-names: Christoph
     - family-names: Tarocco 
-    given-names: Nicola
+      given-names: Nicola
   title: "Bidirectional Paper-Repository Tracing in Software Engineering"
   type: article
   year: 2024
