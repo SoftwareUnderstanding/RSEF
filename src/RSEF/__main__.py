@@ -93,7 +93,7 @@ def assess(input, output, unidir, bidir):
             output_path = paper_objects_search(
                 papers_json=processed_papers_path, output_dir=output, unidir=unidir, bidir=bidir)
 
-        elif isinstance(data, list) and 'file_path' in data:
+        elif isinstance(data, list) and 'file_path' in data[0]:
             # downloaded_metadata.json
             process(input=input, json=None, output=output)
             output_path = paper_objects_search(
