@@ -95,9 +95,10 @@ def assess(input, output, unidir, bidir):
 
         elif isinstance(data, list) and 'file_path' in data[0]:
             # downloaded_metadata.json
-            process(input=input, json=None, output=output)
+            processed_papers = process(input=input, json=None, output=output)
+            processed_papers_path = processed_papers + PROCESSED_PATH
             output_path = paper_objects_search(
-                papers_json=input, output_dir=output, unidir=unidir, bidir=bidir)
+                papers_json=processed_papers_path, output_dir=output, unidir=unidir, bidir=bidir)
 
         else:
             raise ValueError("Unrecognized JSON format")

@@ -1,13 +1,16 @@
+from ..object_creator.extraction_method import ExtractionMethod
+
+
 class ImplementationUrl:
     def __init__(self, identifier, type, paper_frequency, extraction_methods):
-        self.identifier = identifier
-        self.type = type
-        self.paper_frequency = paper_frequency
-        self.extraction_methods = extraction_methods if extraction_methods is not None else []
+        self._identifier = identifier
+        self._type = type
+        self._paper_frequency = paper_frequency
+        self._extraction_methods = extraction_methods if extraction_methods is not None else []
 
     def __str__(self):
         return "URL: %s\nURL Type: %s\nFrequency: %s\nExtraction Methods: %s\n" % \
-                (self.identifier, self.type, self.paper_frequency, self.extraction_methods)
+                (self._identifier, self._type, self._paper_frequency, self._extraction_methods)
 
     def __repr__(self):
         return self.__str__()
@@ -42,14 +45,14 @@ class ImplementationUrl:
 
     @extraction_methods.setter
     def extraction_methods(self, value):
-        self._extraction_methods = value
+        self._extraction_methods = [ExtractionMethod.from_dict(em) for em in value]
 
     def to_dict(self):
         return {
-            "identifier": self.identifier,
-            "type": self.type,
-            "paper_frequency": self.paper_frequency,
-            "extraction_methods": [em for em in self.extraction_methods] 
+            "identifier": self._identifier,
+            "type": self._type,
+            "paper_frequency": self._paper_frequency,
+            'extraction_methods': [em.to_dict() for em in self._extraction_methods] 
         }
 
     @staticmethod
