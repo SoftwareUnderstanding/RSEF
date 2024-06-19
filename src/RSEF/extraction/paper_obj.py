@@ -48,7 +48,7 @@ class PaperObj:
                 identifier=url,
                 type=url_type,
                 paper_frequency=frequency,
-                extraction_methods=extraction_method
+                extraction_methods=[extraction_method]
             )
             self._implementation_urls.append(new_url)
 

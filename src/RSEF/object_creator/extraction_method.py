@@ -54,11 +54,11 @@ class ExtractionMethod:
 
     def to_dict(self):
         return {
-            "type": self.type,
-            "location": self.location,
-            "location_type": self.location_type,
-            "source": self.source,
-            "source_paragraph": self.source_paragraph
+            "type": self._type,
+            "location": self._location,
+            "location_type": self._location_type,
+            "source": self._source,
+            "source_paragraph": self._source_paragraph
         }
 
     @staticmethod
