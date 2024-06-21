@@ -45,14 +45,14 @@ class ImplementationUrl:
 
     @extraction_methods.setter
     def extraction_methods(self, value):
-        self._extraction_methods = [ExtractionMethod.from_dict(em) for em in value]
+        self._extraction_methods = value
 
     def to_dict(self):
         return {
             "identifier": self._identifier,
             "type": self._type,
             "paper_frequency": self._paper_frequency,
-            "extraction_methods": [em.to_dict() for em in self._extraction_methods] 
+            "extraction_methods": [em for em in self._extraction_methods] 
         }
 
     @staticmethod
