@@ -23,8 +23,7 @@ def get_record(rec_id_or_doi: str):
     logger.debug(f"Fetching Zenodo record metadata for `{rec_id_or_doi}`")
     if not rec_id_or_doi:
         raise ValueError(f"Not a valid DOI: {rec_id_or_doi}")
-    is_doi = "doi.org" in rec_id_or_doi
-    if is_doi:
+    if ("doi.org" or "dx.doi.org") in rec_id_or_doi:
         try:
             record_url = get_redirect_url(rec_id_or_doi)
             match = re.search(r"[0-9]+", record_url)
@@ -41,7 +40,7 @@ def get_record(rec_id_or_doi: str):
 
 
 def get_redirect_url(doi: str) -> str:
-    """Given a DOI or a URL of a DOI, returns the redirect URL."""
+    """Given a DOI or a URL of a DOI, returns the final redirect URL."""
     if doi_clean := str_to_doiID(doi):
         doi_url = f"https://doi.org/{doi_clean}"
     else:
@@ -51,25 +50,38 @@ def get_redirect_url(doi: str) -> str:
 
     try:
         logger.debug(f"Resolving DOI for `{doi_url}`")
-        response = requests.get(doi_url, allow_redirects=False)
+        current_url = doi_url
+        while True:
+            response = requests.get(current_url, allow_redirects=False)
+            logger.debug(f"Response: {response.text}")
+            
+            if "Location" in response.headers or "location" in response.headers:
+                location = response.headers.get("Location") or response.headers.get("location")
+                logger.debug(f"Redirecting to: {location}")
+                current_url = location
+            else:
+                logger.debug(f"Final URL: {current_url}")
+                return current_url
+        # response = requests.get(doi_url, allow_redirects=False)
 
-        logger.debug(f"DOI response: `{response.text}`")
+        # logger.debug(f"DOI response: `{response.text}`")
 
-        # Check if the response has a 'Location' header
-        if "Location" in response.headers or "location" in response.headers:
-            location = response.headers.get("Location") or response.headers.get(
-                "location"
-            )
-            logger.debug(f"Response: {location}")
-            return location
-        else:
-            error_msg = f"No 'Location' header found in the response for DOI {doi}."
-            logger.error(error_msg)
-            raise RuntimeError(error_msg)
+        # # Check if the response has a 'Location' header
+        # if "Location" in response.headers or "location" in response.headers:
+        #     location = response.headers.get("Location") or response.headers.get(
+        #         "location"
+        #     )
+        #     logger.debug(f"Response: {location}")
+        #     return location
+        # else:
+        #     error_msg = f"No 'Location' header found in the response for DOI {doi}."
+        #     logger.error(error_msg)
+        #     raise RuntimeError(error_msg)
     except requests.exceptions.RequestException as e:
         error_msg = f"An error occurred: {e}"
         logger.error(error_msg)
-        raise RuntimeError(error_msg)
+        return current_url
+        #raise RuntimeError(error_msg)
 
 
 def get_github_from_zenodo(zenodo_response: str) -> list:

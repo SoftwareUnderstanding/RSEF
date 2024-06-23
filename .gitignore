@@ -154,3 +154,6 @@ test/pipeline_folder/*
 
 # DOI-Extractor-OEG tool
 doiExtractor/
+
+*.json
+out_test.csv/*
