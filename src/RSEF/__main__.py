@@ -31,9 +31,16 @@ def cli():
     Find and assess Research Software within Research papers.\n
 
     Usage:\n
-    1. (assess)     Assess doi for unidirectionality or bidirectionality\n
-    2. (download)   Download PDF (paper) from a doi or list\n
-    3. (process)    Process downloaded pdf to find urls and abstract\n
+    1. (download) Download PDF article from a doi or arxiv list 
+       (only open source articles)\n
+    2. (assess)   Assess if a PDF contains code implementation links.
+       There are two methods for detecting a code implementation. These methods
+       complement each other:\n
+         - Unidirectional: A sentence classifier identifies if the detected code 
+         repository is a proposed implementation given its context.\n
+         - Bidirectional: A code implementation link is found in a paper, and 
+         the code repository contains a link back to the paper (title, DOI) \n
+
 
     """
     pass

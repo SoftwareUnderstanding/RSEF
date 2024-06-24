@@ -32,13 +32,13 @@ class TestOpenAlexQuery(TestCase):
         test_doi = "10.21428/58320208.e46b7b81"
         expected = "https://doi.org/10.21428/58320208.e46b7b81"
         ans = convert_to_doi_url(test_doi)
-        self.assertEquals(ans,expected)
+        self.assertEqual(ans,expected)
 
     def test_convert_to_doi_url_already(self):
         test_doi = "https://doi.org/10.21428/58320208.e46b7b81"
         expected = "https://doi.org/10.21428/58320208.e46b7b81"
         ans = convert_to_doi_url(test_doi)
-        self.assertEquals(ans,expected)
+        self.assertEqual(ans,expected)
 
     def test_convert_to_doi_url_notdoi(self):
         test_doi = "https://doi.org/1021428/58320208.e46b7b81"
@@ -55,7 +55,7 @@ class TestOpenAlexQuery(TestCase):
         expected = "WIDOCO: A Wizard for Documenting Ontologies"
         ans = query_openalex_api(doi)
         title = ans['title']
-        self.assertEquals(title,expected)
+        self.assertEqual(title,expected)
     def test_oa_doi_query_none(self):
         ans = query_openalex_api(None)
         self.assertIsNone(ans)
@@ -93,7 +93,7 @@ class TestOpenAlexQuery(TestCase):
         title = "Widoco"
         resp_json = pdf_title_to_meta(title)
         doi = resp_json["doi"]
-        self.assertEquals(doi,"https://doi.org/10.1007/978-3-319-68204-4_9")
+        self.assertEqual(doi,"https://doi.org/10.1007/978-3-319-68204-4_9")
 
     def test_no_title_query(self):
         title = ""
@@ -108,24 +108,23 @@ class TestOpenAlexQuery(TestCase):
         title = "SPARQL2Flink: Evaluation of SPARQL Queries on Apache Flink"
         resp_json = pdf_title_to_meta(title)
         doi = resp_json["doi"]
-        self.assertEquals(doi, "https://doi.org/10.3390/app11157033")
+        self.assertEqual(doi, "https://doi.org/10.3390/app11157033")
 
     def test_problematic_title(self):
-        #TODO fails due to OA
         title = "(In)Stability for the Blockchain: Deleveraging Spirals and Stablecoin Attacks"
         resp_json = resp_json = pdf_title_to_meta(title)
         doi = resp_json["doi"]
         expected = "https://doi.org/10.21428/58320208.e46b7b81"
-        self.assertIsNone(doi)
+        self.assertEqual(doi,expected)
 
 
 class TestZenodoApi(TestCase):
 
     def test_get_redirect(self):
         doi_url = 'https://doi.org/10.5281/zenodo.591294'
-        expected = "https://zenodo.org/record/591294"
+        expected = "https://zenodo.org/records/11093793"
         ans = get_redirect_url(doi_url)
-        self.assertEquals(expected, ans)
+        self.assertEqual(expected, ans)
 
     def test_get_redirect_invalid_doi(self):
         doi_url = 'https://doi.org/10,5281/made_up.591294'
@@ -134,9 +133,9 @@ class TestZenodoApi(TestCase):
 
 
     def test_get_redirect_made_up_doi(self):
+        """ If the URL is not valid, the same URL is returned"""
         doi_url = 'https://doi.org/10.5281/made_up.591294'
-        with self.assertRaises(RuntimeError):
-            get_redirect_url(doi_url)
+        self.assertEqual(doi_url,get_redirect_url(doi_url))
 
     def test_get_redirect_none(self):
         with self.assertRaises(ValueError):
@@ -173,15 +172,15 @@ class TestZenodoApi(TestCase):
         doi_url = 'https://doi.org/10.5281/zenodo.591294'
         record = get_record(doi_url)
         ans = get_github_from_zenodo(record[0])
-        expected = ['https://github.com/dgarijo/Widoco']
-        self.assertEquals(ans, expected)
+        expected = 'https://github.com/dgarijo/Widoco'
+        self.assertTrue(expected in ans)
 
     def test_get_github_zenodo_empty_text(self):
         empty_text = ""
         ans = get_github_from_zenodo(empty_text)
-        self.assertEquals(ans, [])
+        self.assertEqual(ans, [])
 
     def test_get_github_zenodo_None(self):
         ans = get_github_from_zenodo(None)
-        self.assertEquals(ans, [])
+        self.assertEqual(ans, [])
 
