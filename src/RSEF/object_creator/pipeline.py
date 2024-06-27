@@ -47,19 +47,30 @@ def process_paper(paper, output_dir, bidir=True, unidir=True):
     :returns:
     paperObj with URLs found based on the specified pipeline types
     """
-    if paper.doi:
-        log.info(f"Analyzing paper with DOI: {paper.doi}")    
+    if paper.doi or paper.arxiv:
+        if paper.doi:
+            log.info(f"Analyzing paper with DOI: {paper.doi}")    
+        if paper.arxiv:
+            log.info(f"Analyzing paper with DOI: {paper.arxiv}")    
 
         if bidir:
-            log.info("Checking bidirectional links")
-            paper = check_bidir(paper, output_dir)
+            try:
+                log.info("Checking bidirectional links")
+                paper = check_bidir(paper, output_dir)
+            except Exception as e:
+                log.error("Error extracting bidirectional relationship" + str(e))
+                return paper
 
         if unidir:
-            log.info("Checking unidirectional links")
-            repo_link, source_para = extract_repo_links_from_pdf(paper.file_path)
-            if repo_link:
-                extraction_method = ExtractionMethod(type='unidir', location=paper.file_path , location_type='PAPER', source_paragraph=source_para)
-                paper.add_implementation_link(repo_link, 'git', extraction_method=extraction_method)
+            try:
+                log.info("Checking unidirectional links")
+                repo_link, source_para = extract_repo_links_from_pdf(paper.file_path)
+                if repo_link:
+                    extraction_method = ExtractionMethod(type='unidir', location=paper.file_path , location_type='PAPER', source_paragraph=source_para)
+                    paper.add_implementation_link(repo_link, 'git', extraction_method=extraction_method)
+            except Exception as e:
+                log.error("Error extracting unidirectional relationship" + str(e))
+                return paper
                 
         log.info(f"Finished analyzing paper with DOI: {paper.doi}")
     
@@ -214,7 +225,10 @@ def paper_objects_search(papers_json, output_dir, bidir=True, unidir=True):
         return
 
     for index, obj in enumerate(paper_dicts):
-        log.info(f"Analyzing directionality for {obj['doi']}")
+        if obj['doi']:
+            log.info(f"Analyzing directionality for {obj['doi']}")
+        elif obj['arxiv']:
+            log.info(f"Analyzing directionality for {obj['arxiv']}")
         paper = paperDict_to_paperObj(obj)
 
         if not paper:

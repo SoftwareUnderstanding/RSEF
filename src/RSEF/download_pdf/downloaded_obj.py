@@ -14,6 +14,9 @@ class DownloadedObj:
         self._file_name = file_name
         self._file_path = file_path
 
+    def __str__(self):
+        return f"Title: {self._title}\nDOI: {self._doi}\nArXiv: {self._arxiv}\nFile Name: {self._file_name}\nFile Path: {self._file_path}"
+
     @property
     def title(self):
         return self._title

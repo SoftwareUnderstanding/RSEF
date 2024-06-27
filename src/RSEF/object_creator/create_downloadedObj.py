@@ -10,7 +10,7 @@ from ..extraction.pdf_title_extraction import extract_pdf_title
 from ..metadata.api.openAlex_api_queries import pdf_title_to_meta
 from ..object_creator.create_metadata_obj import extract_arxivID
 from ..repofrompaper.utils.constants import DOWNLOADED_PATH
-from ..utils.regex import str_to_doiID
+from ..utils.regex import str_to_doiID, DOI_REGEX
 
 
 def meta_to_dwnldd(metadataObj, output_dir):
@@ -122,14 +122,18 @@ def doi_to_downloadedObj(doi,output_dir):
         return _doi_to_downloaded_obj_backup(doi, output_dir)
 
 
-def _doi_to_downloaded_obj_backup(doi,output_dir):
+def _doi_to_downloaded_obj_backup(id,output_dir):
     try:
-        file_path = pdf_download_pipeline(id=doi, output_directory=output_dir)
+        file_path = pdf_download_pipeline(id=id, output_directory=output_dir)
         if not file_path:
             return None
-        #TODO extract title
-        return DownloadedObj(title=extract_pdf_title(pdf_path=file_path), doi=doi, arxiv=None,
-                             file_name=os.path.basename(file_path), file_path=file_path)
+        match = re.match(DOI_REGEX, id, re.IGNORECASE)
+        if match: # id is a doi
+            return DownloadedObj(title=extract_pdf_title(pdf_path=file_path), doi=id, arxiv=None,
+                                file_name=os.path.basename(file_path), file_path=file_path)
+        else: # id is an arxiv
+            return DownloadedObj(title=extract_pdf_title(pdf_path=file_path), doi=None, arxiv=id,
+                                file_name=os.path.basename(file_path), file_path=file_path)
     except Exception as e:
         logging.error(f"An error occurred in _doi_to_downloaded_obj_backup: {str(e)}")
         return None
@@ -371,7 +375,7 @@ def remove_empty_fields(json_obj):
         if isinstance(json_obj, dict):
             keys_to_delete = []
             for key, value in json_obj.items():
-                if value == "":
+                if value == "" or value is None:
                     keys_to_delete.append(key)
                 elif isinstance(value, (dict, list)):
                     remove_empty_fields(value)
