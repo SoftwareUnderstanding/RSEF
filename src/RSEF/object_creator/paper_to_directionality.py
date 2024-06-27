@@ -65,10 +65,10 @@ def check_paper_directionality(paper, directionality, output_dir):
             urls = [entry for entry in result[iden]]
             for url_obj in urls:
                 url_type = "git" if "git" in url_obj['url'] else "zenodo"
-                bdir_info = url_obj['bidirectional'][0]
-                extraction_method = ExtractionMethod(type='bidir', location=bdir_info['location'], location_type=bdir_info['id_type'], source=bdir_info['source'])
-                paper.add_implementation_link(
-                    url_obj['url'], url_type, extraction_method)
+                for bdir_info in url_obj['bidirectional']:
+                    extraction_method = ExtractionMethod(type='bidir', location=bdir_info['location'], location_type=bdir_info['id_type'], source=bdir_info['source'])
+                    paper.add_implementation_link(
+                        url_obj['url'], url_type, extraction_method)
 
         return paper
 

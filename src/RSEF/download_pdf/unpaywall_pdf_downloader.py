@@ -79,12 +79,15 @@ def _try_all_location_urls(location: dict):
     :returns:
     response if status code == 200
     '''
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+    }
     if url := safe_dic(location,"url_for_pdf"):
-        response = requests.get(url)
+        response = requests.get(url, headers= headers)
         if response.status_code == 200:
             return response
     if url := safe_dic(location, "url"):
-        response = requests.get(url)
+        response = requests.get(url, headers= headers)
         if response.status_code == 200:
             return response
     return None
@@ -95,7 +98,6 @@ def response_to_pdf_binary(response: requests):
         return None
     if response.status_code != 200:
         return None
-    #
     type = detect_content_type(response)
     if type == "Unknown":
         return None

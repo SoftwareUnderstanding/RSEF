@@ -55,9 +55,9 @@ class test_somef_extraction(TestCase):
     def test_already_dwnldd_repo_meta(self):
         real_url = "https://github.com/SoftwareUnderstanding/SSKG"
         output_dir = os.path.join(TEST_DIR, "json")
-        expected = os.path.join(output_dir, "JSONs/SoftwareUnderstanding_SSKG.json")
+        expected = os.path.join(output_dir, "JSONs\SoftwareUnderstanding_SSKG.json")
         ans = download_repo_metadata(url=real_url, output_folder_path=output_dir)
-        self.assertEquals(ans,str(expected))
+        self.assertEqual(ans,str(expected))
 
     def test_d_r_m_not_url(self):
         fake_url = ""
@@ -93,7 +93,7 @@ class test_somef_extraction(TestCase):
         false_dict = {"related_papers": [{"result": {"value": ";alskdfja2206.05328"}}]}
         ans = get_related_paper(false_dict)
         expected = "2206.05328"
-        self.assertEquals(ans[0],expected)
+        self.assertEqual(ans[0],expected)
         pass
 
     def test_related_none(self):
@@ -127,13 +127,13 @@ class test_somef_extraction(TestCase):
         false_dict = {"description": [{"result": {"value": ";alskdfja2206.05328"}}]}
         ans = description_finder(false_dict)
         expected = "2206.05328"
-        self.assertEquals(ans['arxiv'].pop(), expected)
+        self.assertEqual(ans['arxiv'].pop(), expected)
 
     def test_description_doi(self):
         false_dict = {"description": [{"result": {"value": ";alskdfja2206.05328https://doi.org/10.5281/zenodo.838601"}}]}
         ans = description_finder(false_dict)
         expected = "10.5281/zenodo.838601"
-        self.assertEquals(ans['doi'].pop(), expected)
+        self.assertEqual(ans['doi'].pop(), expected)
 
     def test_description_both(self):
         false_dict = {"description": [{"result": {"value": ";alskdfja2206.05328asfhttps://doi.org/10.5555/KVTD-VPWM"}}]}
@@ -173,7 +173,7 @@ class test_somef_extraction(TestCase):
         false_dict = {"citation": [{"result": {"format": "cff", "value": "https://doi.org/10.5555/KVTD-VPWM"}}]}
         expected = (['10.5555/KVTD-VPWM'], None)
         ans = find_doi_citation(false_dict)
-        self.assertEquals(ans["CFF"][0], expected)
+        self.assertEqual(ans["CFF"][0], expected)
 
     def test_find_doi_citation_none(self):
         ans = find_doi_citation(None)
@@ -198,7 +198,7 @@ class test_somef_extraction(TestCase):
         false_dict = {"citation": [{"result": {"format": "bibtex","value":"https://doi.org/10.5555/KVTD-VPWM"}}]}
         expected = (['10.5555/KVTD-VPWM'], None)
         ans = find_doi_citation(false_dict)
-        self.assertEquals(ans["BIBTEX"].pop(), expected)
+        self.assertEqual(ans["BIBTEX"].pop(), expected)
 
     def test_find_doi_broken_citation(self):
         false_dict = {"citation": [{"result": {"format": "RANDOM", "value": ""}}]}
@@ -209,7 +209,7 @@ class test_somef_extraction(TestCase):
         false_dict = {"citation": [{"result": {"type": "Text_excerpt", "value": "https://doi.org/10.5555/KVTD-VPWM"}}]}
         expected = (['10.5555/KVTD-VPWM'], None)
         ans = find_doi_citation(false_dict)
-        self.assertEquals(ans["TEXT"].pop(), expected)
+        self.assertEqual(ans["TEXT"].pop(), expected)
 
     def test_real_life_example_2_dois(self):
         examp_json = os.path.join(TEST_DIR, "json/somef.json")
@@ -225,7 +225,7 @@ class test_somef_extraction(TestCase):
         false_dict = {"citation": [{"result": {"format": "cff", "value": "https://arxiv.org/abs/2206.05328"}}]}
         expected = (["2206.05328"], None)
         ans = find_arxiv_citation(false_dict)
-        self.assertEquals(ans["CFF"].pop(), expected)
+        self.assertEqual(ans["CFF"].pop(), expected)
 
     def test_find_arxiv_citation_none(self):
         ans = find_arxiv_citation(None)
@@ -249,7 +249,7 @@ class test_somef_extraction(TestCase):
         false_dict = {"citation": [{"result": {"format": "bibtex","value":"ads;fl\n2206.05328"}}]}
         expected = (["2206.05328"], None)
         ans = find_arxiv_citation(false_dict)
-        self.assertEquals(ans["BIBTEX"].pop(), expected)
+        self.assertEqual(ans["BIBTEX"].pop(), expected)
 
     def test_find_arxiv_broken_citation(self):
         false_dict = {"citation": [{"result": {"format": "RANDOM", "value": ""}}]}
@@ -260,7 +260,7 @@ class test_somef_extraction(TestCase):
         false_dict = {"citation": [{"result": {"type": "Text_excerpt", "value": "a;lskdfj;l2206.05328"}}]}
         expected = (["2206.05328"], None)
         ans = find_arxiv_citation(false_dict)
-        self.assertEquals(ans["TEXT"].pop(), expected)
+        self.assertEqual(ans["TEXT"].pop(), expected)
 
     def test_real_life_example_2_arxivs(self):
         examp_json = os.path.join(TEST_DIR, "json/somef.json")
@@ -313,7 +313,7 @@ class test_title_extraction_pdf(TestCase):
     def test_normal_case(self):
         path_file = os.path.join(TEST_DIR, "pdfs/widoco-iswc2017.pdf")
         title = use_pdf_title(path_file)
-        self.assertEquals("WIDOCO: A Wizard for Documenting Ontologies", title)
+        self.assertEqual("WIDOCO: A Wizard for Documenting Ontologies", title)
     def test_no_pdf(self):
         title = use_pdf_title("")
         self.assertIsNone(title)
@@ -321,39 +321,40 @@ class test_title_extraction_pdf(TestCase):
     def test_tika_title_normal_pdf(self):
         path_file = os.path.join(TEST_DIR, "pdfs/widoco-iswc2017.pdf")
         title = use_pdf_title(path_file)
-        self.assertEquals("WIDOCO: A Wizard for Documenting Ontologies", title)
+        print(title)
+        self.assertEqual("WIDOCO: A Wizard for Documenting Ontologies", title)
 
     def test_tika_title_seperator_pdf(self):
         path_file = os.path.join(TEST_DIR,"pdfs/test_with_weird_seperation.pdf")
         title = use_pdf_title(path_file)
-        self.assertEquals("AVIS: Autonomous Visual Information Seeking with Large Language Models", \
+        self.assertEqual("AVIS: Autonomous Visual Information Seeking with Large Language Models", \
                           title)
 
     def test_tika_title_3(self):
         path_file = os.path.join(TEST_DIR,"pdfs/possible_fail.pdf")
         title = use_pdf_title(path_file)
         expected = "Intensity-modulated radiotherapy versus stereotactic body radiotherapy for prostate cancer (PACE-B): 2-year toxicity results from an open-label, randomised, phase 3, non-inferiority trial"
-        self.assertEquals(title, expected)
+        self.assertEqual(title, expected)
 
     def test_tika_title4(self):
         #Found a failure, this paper has a header in the title page
         path_file = os.path.join(TEST_DIR,"pdfs/poss_fail2.pdf")
         title = use_pdf_title(path_file)
         expected = "DYNAMIC CARDIAC MRI RECONSTRUCTION USING COMBINED TENSOR NUCLEAR NORM AND CASORATI MATRIX NUCLEAR NORM REGULARIZATIONS"
-        self.assertNotEquals(title,expected)
+        self.assertNotEqual(title,expected)
 
     def test_pdf_title(self):
         #test_tika_title3 fails but works with pdf_title
         path_file = os.path.join(TEST_DIR, "pdfs/poss_fail2.pdf")
         title = use_pdf_title(path_file)
         expected = "Dynamic Cardiac MRI Reconstruction Using Combined Tensor Nuclear Norm and Casorati Matrix Nuclear Norm Regularizations"
-        self.assertEquals(expected, title)
+        self.assertEqual(expected, title)
 
     def test_title_extract(self):
         path_file = os.path.join(TEST_DIR,"pdfs/unicode_fail.pdf")
         title = extract_pdf_title(path_file)
         expected = "Data governance through a multi-DLT architecture in view of the GDPR"
-        self.assertEquals(title, expected)
+        self.assertEqual(title, expected)
 
 
 from src.RSEF.extraction.pdf_extraction_tika import ranked_git_url

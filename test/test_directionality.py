@@ -47,7 +47,7 @@ class test_bidir(TestCase):
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = "https://github.com/KnowledgeCaptureAndDiscovery/somef"
-        self.assertEquals(expected_result, result["10.1162/qss_a_00167"][0]["url"])
+        self.assertEqual(expected_result, result["10.1162/qss_a_00167"][0]["url"])
 
     def test_citation_doi2(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -62,7 +62,7 @@ class test_bidir(TestCase):
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = "https://github.com/dgarijo/Widoco"
-        self.assertEquals(expected_result, result["10.1007/978-3-319-68204-4_9"][0]["url"])
+        self.assertEqual(expected_result, result["10.1007/978-3-319-68204-4_9"][0]["url"])
 
     def test_doi_pipeline(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -70,7 +70,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = 'https://github.com/mateuszbuda/brain-segmentation'
-        self.assertEquals(result[doi][0]["url"], expected_result)
+        self.assertEqual(result[doi][0]["url"], expected_result)
 
     def test_doi_pipeline1(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -78,7 +78,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = 'https://github.com/YunqiuXu/H-KGA'
-        self.assertEquals(result[doi][0]["url"], expected_result)
+        self.assertEqual(result[doi][0]["url"], expected_result)
 
     def test_doi_pipeline2(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -86,7 +86,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = 'https://github.com/astro-alexis/magnotron-tts'
-        self.assertEquals(result[doi][0]["url"], expected_result)
+        self.assertEqual(result[doi][0]["url"], expected_result)
 
     def test_doi_pipeline3(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -94,7 +94,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = 'https://github.com/lukasliebel/MultiDepth'
-        self.assertEquals(result[doi][0]["url"], expected_result)
+        self.assertEqual(result[doi][0]["url"], expected_result)
 
     def test_doi_pipeline_no_ids(self):
         wipe_directory("pipeline_folder")
@@ -110,7 +110,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = 'https://github.com/THUDM/SelfKG'
-        self.assertEquals(result[doi][0]["url"], expected_result)
+        self.assertEqual(result[doi][0]["url"], expected_result)
 
     def test_doi_pipeline6(self):
         # TODO
@@ -120,7 +120,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = 'https://github.com/IlyaTrofimov/dlr'
-        self.assertEquals(result[doi][0]["url"], expected_result)
+        self.assertEqual(result[doi][0]["url"], expected_result)
 
     def test_arxiv_related(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -128,7 +128,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = 'https://github.com/lukasliebel/MultiDepth'
-        self.assertEquals(result[doi][0]["url"], expected_result)
+        self.assertEqual(result[doi][0]["url"], expected_result)
 
     def test_arxiv_related2(self):
         '''It is not mentioned within the paper'''
@@ -137,7 +137,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, "pipeline_folder")
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = paper
-        self.assertEquals(result, expected_result)
+        self.assertEqual(result, expected_result)
 
     def test_arxiv_1(self):
         '''Test to download first OA the best pdf has 403 forbidden'''
@@ -146,7 +146,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = "https://github.com/uncbiag/ICON"
-        self.assertEquals(result[doi][0]["url"], expected_result)
+        self.assertEqual(result[doi][0]["url"], expected_result)
 
     def test_arxiv_2(self):
         '''Test to download first OA the best pdf has 403 forbidden'''
@@ -155,7 +155,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = "https://github.com/cl-tohoku/eval-via-selection"
-        self.assertEquals(result[doi][0]["url"], expected_result)
+        self.assertEqual(result[doi][0]["url"], expected_result)
 
     def test_arxiv_3(self):
         # TODO add the crossref to fix this openAlex issue
@@ -165,7 +165,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = "https://github.com/Robbie-Xu/CPSD"
-        # self.assertEquals(result[doi]["url"], expected_result)
+        # self.assertEqual(result[doi]["url"], expected_result)
         pass
 
     def test_arxiv_5(self):
@@ -176,7 +176,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = "https://github.com/IlyaTrofimov/dlr"
-        # self.assertEquals(result[doi]["url"], expected_result)
+        # self.assertEqual(result[doi]["url"], expected_result)
         pass
 
     def test_arxiv_6(self):
@@ -186,7 +186,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = "https://github.com/tensorflow/tensor2tensor"
-        self.assertEquals(result[doi][0]["url"], expected_result)
+        self.assertEqual(result[doi][0]["url"], expected_result)
 
     def test_arxiv_7(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -206,7 +206,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = "http://github.com/mianbreton/RR_code"
-        self.assertEquals(expected_result, result[doi][0]["url"])
+        self.assertEqual(expected_result, result[doi][0]["url"])
 
     def test_arxiv_9(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -214,7 +214,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = "https://github.com/AI-secure/T3"
-        self.assertEquals(expected_result, result[doi][0]["url"])
+        self.assertEqual(expected_result, result[doi][0]["url"])
 
     def test_doi_2(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -222,7 +222,7 @@ class test_bidir(TestCase):
         paper = doi_to_paper(doi, PIPELINE_FOLDER)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = "https://github.com/momalab/e3"
-        self.assertEquals(expected_result, result[doi][0]["url"])
+        self.assertEqual(expected_result, result[doi][0]["url"])
 
     def test_doi_3(self):
         # TODO SOMEF ISSUE
@@ -262,7 +262,7 @@ class test_bidir(TestCase):
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = "https://github.com/dgarijo/Widoco"
-        self.assertEquals(expected_result, result["1234.56789"][0]["url"])
+        self.assertEqual(expected_result, result["1234.56789"][0]["url"])
 
     def test_zenodo_bidir(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -277,7 +277,7 @@ class test_bidir(TestCase):
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = "https://zenodo.org/records/7867989"
-        self.assertEquals(expected_result, result["1234.56789"][0]["url"])
+        self.assertEqual(expected_result, result["1234.56789"][0]["url"])
 
     def test_zenodo_bidir_wrong_url(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -292,7 +292,7 @@ class test_bidir(TestCase):
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = paper
-        self.assertEquals(result, expected_result)
+        self.assertEqual(result, expected_result)
 
     def test_zenodo_bidir_no_url(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -308,7 +308,7 @@ class test_bidir(TestCase):
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
 
         expected_result = paper
-        self.assertEquals(result, expected_result)
+        self.assertEqual(result, expected_result)
 
     def test_zenodo_bidir_broken_url(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -323,7 +323,7 @@ class test_bidir(TestCase):
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = paper
-        self.assertEquals(result, expected_result)
+        self.assertEqual(result, expected_result)
 
     def test_zenodo_bidir_broken_url_1(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -338,7 +338,7 @@ class test_bidir(TestCase):
         paper = paperDict_to_paperObj(pp_dict)
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
         expected_result = paper
-        self.assertEquals(result, expected_result)
+        self.assertEqual(result, expected_result)
 
     def test_zenodo_bidir_broken_url_2(self):
         wipe_directory(PIPELINE_FOLDER)
@@ -354,7 +354,7 @@ class test_bidir(TestCase):
         result = check_paper_directionality(paper, True, PIPELINE_FOLDER)
 
         expected_result = paper
-        self.assertEquals(result, expected_result)
+        self.assertEqual(result, expected_result)
 
     def test_prob_(self):
         wipe_directory(PIPELINE_FOLDER)

@@ -53,19 +53,21 @@ class PaperObj:
             self._implementation_urls.append(new_url)
 
     def remove_regex(self):
+        filtered_urls = []
         try:
-            self._implementation_urls = [
-                url for url in self._implementation_urls if not self.has_only_regex(url)
-            ]
+            for url in self._implementation_urls:
+                url.extraction_methods = [
+                    method for method in url.extraction_methods if method['type'] != 'regex'
+                ]
+                # Add the URL to filtered_urls if it has non-empty extraction methods
+                if url.extraction_methods:
+                    filtered_urls.append(url)
+            
+            # Update _implementation_urls to only include URLs with non-empty extraction methods
+            self._implementation_urls = filtered_urls
         except Exception as e:
             print(f"An error occurred in remove_regex: {e}")
         
-    def has_only_regex(self, implementation_url):
-        try:
-            return all(method['type'] == 'regex' for method in implementation_url.extraction_methods)
-        except Exception as e:
-            print(f"An error occurred in _has_only_regex: {e}")
-            return False
 
     @property
     def abstract(self):
