@@ -67,7 +67,44 @@ class PaperObj:
             self._implementation_urls = filtered_urls
         except Exception as e:
             print(f"An error occurred in remove_regex: {e}")
+    
+
+    def remove_duplicated_extraction_methods(self):
+        filtered_urls = []
+        try:
+            for url in self._implementation_urls:
+                seen_locations = set()
+                unique_methods = []
+                has_citation_file = False
+                citation_file_location_type = None
+                cff_location_type = None
+                
+                for method in url.extraction_methods:
+                    if method['location'] == 'CITATION_FILE':
+                        unique_methods.append(method)
+                        has_citation_file = True
+                        citation_file_location_type = method['location_type']
+                    elif method['location'] == 'FILE_CFF':
+                        cff_location_type = method['location_type']
+                    elif method['location'] not in seen_locations:
+                        seen_locations.add(method['location'])
+                        unique_methods.append(method)
+                
+                for method in unique_methods:
+                    if method['location'] == 'FILE_CFF' and has_citation_file:
+                        unique_methods.remove(method)
+                    if method['location'] == 'CITATION_FILE' and citation_file_location_type != cff_location_type:
+                        method['location_type'] = f"{citation_file_location_type} , {cff_location_type}"
+                url.extraction_methods = unique_methods
+                
+                if url.extraction_methods:
+                    filtered_urls.append(url)
+            
+            self._implementation_urls = filtered_urls
         
+        except Exception as e:
+            print(f"An error occurred in remove_duplicated_extraction_methods: {e}")
+
 
     @property
     def abstract(self):

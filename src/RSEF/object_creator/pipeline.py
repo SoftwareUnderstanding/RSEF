@@ -237,6 +237,7 @@ def paper_objects_search(papers_json, output_dir, bidir=True, unidir=True):
 
         paper = process_paper(paper, output_dir, bidir=bidir, unidir=unidir)
 
+        paper.remove_duplicated_extraction_methods()
         paper.remove_regex()
 
         try:
