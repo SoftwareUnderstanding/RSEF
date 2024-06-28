@@ -66,10 +66,13 @@ def check_paper_directionality(paper, directionality, output_dir):
             for url_obj in urls:
                 url_type = "git" if "git" in url_obj['url'] else "zenodo"
                 for bdir_info in url_obj['bidirectional']:
-                    extraction_method = ExtractionMethod(type='bidir', location=bdir_info['location'], location_type=bdir_info['id_type'], source=bdir_info['source'])
-                    paper.add_implementation_link(
-                        url_obj['url'], url_type, extraction_method)
-
+                    if "github_from_zenodo" in bdir_info:
+                        continue
+                    else:
+                        extraction_method = ExtractionMethod(type='bidir', location=bdir_info['location'], location_type=bdir_info['id_type'], source=bdir_info['source'])
+                        paper.add_implementation_link(
+                            url_obj['url'], url_type, extraction_method)
+                                
         return paper
 
     except Exception as e:
@@ -84,7 +87,7 @@ def _zenodo_check_directionality(paper, zenodo_urls, directionality, iden, first
         if directionality:
             is_bidir = zenodo_is_it_bidir(
                 paper_obj=paper, zenodo_url=url, output_dir=output_dir)
-       
+            
         if is_bidir:
             if first_time:
                 result[iden] = []
@@ -113,14 +116,14 @@ def _git_check_directionality(paper, git_urls, directionality, iden, first_time,
         if not directionality:
             is_unidir = is_repo_unidir(paper, repo_file)
         if is_bidir:
-            if first_time:
-                result[iden] = []
-                first_time = False
             entry = {
                 "url": url,
                 "bidirectional": is_bidir
             }
-            result[iden].append(entry)
+            if iden in result:
+                result[iden].append(entry)
+            else:
+                result[iden] = [entry]
         if is_unidir:
             if first_time:
                 result[iden] = []
