@@ -67,7 +67,7 @@ Commands:
 
 ### Download
 
-The download command allows for a user to download the pdf with its metadata given an Identifier: ArXiv or DOI.  Alongside the PDFs folder there will be a `downloaded_metadata.json` which will have the Title, DOI, ArXiv and filename/filepath for each paper downloaded. RSEF uses unpaywall to download open access publications. 
+The download command allows for a user to download the pdf with its metadata given an Identifier: ArXiv or DOI.  Alongside the PDFs folder there will be a `downloaded_metadata.json` which will have the Title, DOI, ArXiv and filename/filepath for each paper downloaded. RSEF uses [Unpaywall](https://api.unpaywall.org) to download open access publications. 
 
 ```
 rsef download -h 
@@ -84,7 +84,7 @@ Options:
 
 ### Assess
 
-The assess command allows for a user to determine whether a given Identifier, in this case ArXiv or DOI, is bidirectional or not. This command accepts different inputs:
+The assess command locates code implementations in a publication, given its identifier (ArXiv id or DOI). For each of the candidate code repository links found in the target publication, the `assess` command will find whether there is a unidirectional or bidirectional link. This command accepts different inputs:
 
 1. A single DOI/ArXiv
 
@@ -97,6 +97,7 @@ The assess command allows for a user to determine whether a given Identifier, in
 5. A path to results.json file, obtained by executing 
 doiExtractor tool (https://github.com/oeg-upm/DOI-Extractor-OEG).
 This results.json file has the following format:
+
 ```
 [
     {
@@ -106,9 +107,10 @@ This results.json file has the following format:
     },
 ]
 ```
-The resulting information after executing the command will be saved in ```output/url_search_output.json```.
 
+The resulting information after executing the command will be saved in ```output/url_search_output.json```. See [the JSON output specification](doc/JSONs.md) to understand the structure and fields in the JSON result.
 
+Usage: 
 ```text
 rsef assess -h
 Usage: sskg assess [OPTIONS]
@@ -126,9 +128,8 @@ Options:
 -h, --help Show this message and exit.
 ```
 
-- The unidirectional link search uses the RepoFromPaper submodule to search for the implementation repository link in the paper. The RepoFromPaper submodule utilizes a SciBert Model to classify the paper's text as either a proposal sentence or not. The top 5 highest ranked sentences are then searched for a repository link. If no link is found in the initial search, a footnote/reference search is conducted. RepoFromPaper can either return a link or return an empty response if no link is found.
-- The bidirectional link search intends to find paper-repo links where both the paper points to the repo and the repo (metadata) points back to the paper. The bidir search targets 'Git' and 'Zenodo' links. The search may find zero, one, or multiple bidirectional links. 
-- If repository links are found in the paper, the links and search methods (unidir/bidir) are added to the `ImplementationUrl` list in the `PaperObj` of the paper. The list of implementation urls is initially created using regex link search method when the paper object is created. Both the unidir and bidir search methods return the `PaperObj`, with the updated `ImplementationUrl` list if links were found.
+- The **unidirectional link search** uses the [RepoFromPaper](https://github.com/StankovskiA/RepoFromPaper) submodule to search for the implementation repository link in the paper. RepoFromPaper uses a SciBert Model to classify the paper's text as either a proposal sentence or not. The top 5 highest ranked sentences are then searched for a repository link. If no link is found in the initial search, a footnote/reference search is conducted. RepoFromPaper can either return a link or return an empty response if no link is found.
+- The **bidirectional link search** intends to find paper-repo links where both the paper points to the repo and the repo (metadata) points back to the paper. The search may find zero, one, or multiple bidirectional links. 
 
 
 <!--
@@ -139,25 +140,22 @@ For assessment of the program against its corpus. The corpus can be found within
 
 
 ## RSEF Evaluation
+Below we detail the evaluation methods and corpora used for RSEF
 
-RSEF has been validated with a corpus made of 154 papers and repositories, including  several types of bi-directionality paper-repository links (e.g., repositories including just the title, Arxiv URLs or DOIs in the README file, using citation files, repositories in different code platforms, etc.)
+### Unidirectional extraction
 
-Two annotators were selected to manually annotate the presence of bi-directionality. In case of two different annotations in the corpus, a third annotator decided the final value.
+For the training corpus for our models, we included [75 implementation sentences and approximately 2500 non-implementation sentences](https://doi.org/10.5281/zenodo.10701846) from 61 research papers sourced from the [PapersWithCode platform](https://paperswithcode.com/). To evaluate the performance of our method, we assembled a [separate evaluation corpus](https://doi.org/10.5281/zenodo.10980368) consisting of 150 software engineering research papers obtained from [Arxiv.org](https://arxiv.org/). These papers were carefully selected to ensure heterogeneity and avoid repetitiveness, representing a diverse range of implementation mention styles, authored by various authors. We manually tagged these papers to create a validation set specifically for evaluating our methodology. Importantly, none of the papers included in this validation set were used for training the models, ensuring the integrity of our evaluation process.
 
-This corpus, in TSV format, can be found in the [evaluation/bidirectional folder](https://github.com/SoftwareUnderstanding/RSEF/blob/main/evaluation/bidirectional/corpus.tsv).
+### Bidirectional extraction
 
-In case you want to run the evaluation, you will have to use the script presents in the evaluation_only_ids folder.
-  
-```
-python eval_corpus_big.py
-```
+The bidirectional search of RSEF has been validated with a corpus made of 154 papers and repositories, including  several types of bi-directionality paper-repository links (e.g., repositories including just the title, Arxiv URLs or DOIs in the README file, using citation files, repositories in different code platforms, etc.). Two annotators were selected to manually annotate the presence of bi-directionality. In case of two different annotations in the corpus, a third annotator decided the final value.
 
-A file name **output_metrics.json** will be generated with the results of the evaluation. You can find metrics such as precision, recall, f1-score and the list of false negatives.
+A summary of the performance of each method for each evaluation corpora can be seen in the table below:
 
-The results of the evaluation using our corpus are:
-- **precision:** 1.0
-- **recall:** 0.918918918918919
-- **f1-score:** 0.9577464788732395
+| Type of extraction |Train corpus | Eval. corpus | Precision | Recall | F1-Measure |
+|---|--- |---|---|---|---|
+| unidirectional |[Link](https://doi.org/10.5281/zenodo.10701846) | [Link](https://doi.org/10.5281/zenodo.10980368) | 0.94 | 0.95 | 0.94 |
+| bidirectional | N/A| [Link](https://github.com/SoftwareUnderstanding/RSEF/blob/main/evaluation/bidirectional/corpus.tsv) | 1 | 0.91 | 0.95 |
 
 ## Cite RSEF
 Please refer to our Mining Software Repositories 2024 paper:
@@ -173,7 +171,7 @@ Please refer to our Mining Software Repositories 2024 paper:
     url= {https://dgarijo.com/papers/msr_2024.pdf}
 }
 ```
-The unidirectional evaluation makes use of [RepoFromPaper](https://github.com/StankovskiA/RepoFromPaper), which has the following workshop paper:
+The unidirectional evaluation makes use of [RepoFromPaper](https://github.com/StankovskiA/RepoFromPaper), which has the following NSLP2024 workshop paper:
 ```
 @article{stankovski2024,
   title		   = {RepoFromPaper: An Approach to Extract Software Code Implementations from Scientific Publications},
