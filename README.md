@@ -1,15 +1,12 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10306762.svg)](https://doi.org/10.5281/zenodo.10306762)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10306762.svg)](https://doi.org/10.5281/zenodo.10306762) [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
   
 # Research Software Extraction Framework (RSEF)
 
-  
-## Introduction
+RSEF extracts the link between a scientific paper and its corresponding software implementations (i.e., code repositories). It accomplishes this by locating URLs of software repositories within the scientific papers. Two main types of implementations are extracted:
+1. **Unidirectional links**: Papers that point to code repositories. RSEF analyzes the context of the mention to detect whether a candidate is appropriate (e.g., "our code is available at 'URL'")
+2. **Bidirectional links**: RSEF extracts the metadata of the target repository to find any reference back to the original paper (e.g., citation files, mentions in README, etc.)
 
-This tool verifies the link between a scientific paper and a software repository. It accomplishes this by locating the URL of the software repository within the scientific paper. It then extracts the repository's metadata to find any URLs associated with scientific papers and checks if they lead back to the original paper. If a bidirectional link is established, it marks it as "bidirectional".
-
-  
-
-There is also a "unidirectional" metric, which finds a repository url and see's within the repository if the paper is named.
+For each candidate link, RSEF indicates how it was found in the original publication, along with the type of connection found (unidirectional or bidirectional). The response is structured according to the following [JSON format](doc/JSONs.md).  
 
 ## Dependencies
 
@@ -22,17 +19,13 @@ There is also a "unidirectional" metric, which finds a repository url and see's 
 Install the required dependencies by running:
 
 ```
-
 pip install -e .
-
 ```
 
 Highly recommended steps:
 
-```text
-
+```
 somef configure
-
 ```
 
 You will be asked to provide:
@@ -45,8 +38,7 @@ You will be asked to provide:
 
 ## Usage
 
-```text
-
+```
 Usage: rsef [OPTIONS] COMMAND [ARGS]...
 
 RRRRRRRRR     SSSSSSSSS    EEEEEEEEE  FFFFFFFFF  
@@ -71,12 +63,12 @@ Options:
 Commands:
 	assess
 	download
- 
 ```
 
 ### Download
 
-The download command allows for a user to download the pdf with its metadata given an Identifier: ArXiv or DOI.  Alongside the PDFs folder there will be a `downloaded_metadata.json` which will have the Title, DOI, ArXiv and filename/filepath for each paper downloaded.
+The download command allows for a user to download the pdf with its metadata given an Identifier: ArXiv or DOI.  Alongside the PDFs folder there will be a `downloaded_metadata.json` which will have the Title, DOI, ArXiv and filename/filepath for each paper downloaded. RSEF uses unpaywall to download open access publications. 
+
 ```
 rsef download -h 
 Usage: rsef download [OPTIONS]
@@ -92,7 +84,7 @@ Options:
 
 ### Assess
 
-The assess command allows for a user to determine whether a given Identifier, in this case ArXiv or DOI,  is bidirectional or not. This command accepts different inputs:
+The assess command allows for a user to determine whether a given Identifier, in this case ArXiv or DOI, is bidirectional or not. This command accepts different inputs:
 
 1. A single DOI/ArXiv
 
@@ -137,124 +129,35 @@ Options:
 - The unidirectional link search uses the RepoFromPaper submodule to search for the implementation repository link in the paper. The RepoFromPaper submodule utilizes a SciBert Model to classify the paper's text as either a proposal sentence or not. The top 5 highest ranked sentences are then searched for a repository link. If no link is found in the initial search, a footnote/reference search is conducted. RepoFromPaper can either return a link or return an empty response if no link is found.
 - The bidirectional link search intends to find paper-repo links where both the paper points to the repo and the repo (metadata) points back to the paper. The bidir search targets 'Git' and 'Zenodo' links. The search may find zero, one, or multiple bidirectional links. 
 - If repository links are found in the paper, the links and search methods (unidir/bidir) are added to the `ImplementationUrl` list in the `PaperObj` of the paper. The list of implementation urls is initially created using regex link search method when the paper object is created. Both the unidir and bidir search methods return the `PaperObj`, with the updated `ImplementationUrl` list if links were found.
-## Structure
 
 
-The src/RSEF is divided into the following directories:
-
-1. Download_pdf
-
-2. Metadata
-
-3. Extraction
-
-4. Object_creator
-
-5. RepoFromPaper 
-
-6. Modelling
-
-7. Prediction
-
-8. Utils
-
-
-### Download_pdf
-
-Pertains to all the downloading of pdfs.
-
-Downloaded_obj is a representation of downloaded papers which have not been processed yet. 
-
-Contains:
-
-	- Title 
-	- DOI
-	- ArXiv
-	- file_path
-	- file_name
-
-These objects are normally saved into a `downloaded_metadata.json`
-
-  
-
-### Metadata
-
-
-Encompasses all petitions to OpenAlex and other api's for fetching the paper's metadata or general requests.
-
-MetadataObj contains the metadata from  OpenAlex: doi, arxiv and its title.
-
-### Extraction
-
-
-
-Tika scripts to open a pdf and extract its urls are also found witin this module.
-
-PaperObj is created once the downloadedObj's pdf has been processed to locate all its urls. 
-Contains: 
-- DOI
--  arXiv
-- Abstract
-- Title
-- File_path
-- File_name
-- URLs
-
-Finally, the necessary functions downloading a repository and extracting its metadata with SOMEF
-
-  
-### Object Creator
-
-This is the pipeline broken down into its main parts. Please look at [pipeline.py](./object_creator/pipeline.py) to view the execution process.
-
-  
-### RepoFromPaper
-
-Contains the code for the RepoFromPaper (RFP) package. RFP uses a combination of natural language processing and heuristics to identify and extract the repository links mentioned in a proposal manner from a paper.
-
-As input it receives the local file path of the paper and returns the repository URL if found.
-
-### Modelling
-
-Contains all assessment of bi-directionality and uni-directionality.
-
-Receives a paperObj and a repository_metadata json.
-
-  
-
+<!--
 ### Prediction
 
 For assessment of the program against its corpus. The corpus can be found within [corpus.csv](./predicition/corpus.csv) and the f1 score obtained bidirectional:  [corpus_eval_bidir.json](./predicition/corpus_eval_bidir.json) and the same for the unidirectional (_unidir)
+-->
 
 
-## Tests
+## RSEF Evaluation
 
-Tests can be found in the `./tests` folder
-
-## Evaluation
-
-This software has been evaluate it with a corpus created expressly.
-
-This corpus, composed by 154 papers-repositories, includes  several types of bi-directionality paper-repository links (e.g., repositories including just the title, Arxiv URLs or DOIs in the README file, using citation files, repositories in different code platforms, etc.)
+RSEF has been validated with a corpus made of 154 papers and repositories, including  several types of bi-directionality paper-repository links (e.g., repositories including just the title, Arxiv URLs or DOIs in the README file, using citation files, repositories in different code platforms, etc.)
 
 Two annotators were selected to manually annotate the presence of bi-directionality. In case of two different annotations in the corpus, a third annotator decided the final value.
 
 This corpus, in TSV format, can be found in the [evaluation/bidirectional folder](https://github.com/SoftwareUnderstanding/RSEF/blob/main/evaluation/bidirectional/corpus.tsv).
 
-The RAW version of the corpus can be found [here](https://github.com/SoftwareUnderstanding/RSEF/blob/main/evaluation/bidirectional/corpus_arxiv_bidirectional_12_23.xlsx).
-
 In case you want to run the evaluation, you will have to use the script presents in the evaluation_only_ids folder.
   
-```text
+```
 python eval_corpus_big.py
 ```
 
 A file name **output_metrics.json** will be generated with the results of the evaluation. You can find metrics such as precision, recall, f1-score and the list of false negatives.
 
 The results of the evaluation using our corpus are:
-**precision:** 1.0
-**recall:** 0.918918918918919
-**f1-score:** 0.9577464788732395
+- **precision:** 1.0
+- **recall:** 0.918918918918919
+- **f1-score:** 0.9577464788732395
 
 ## Cite RSEF
 Please refer to our Mining Software Repositories 2024 paper:
@@ -269,7 +172,16 @@ Please refer to our Mining Software Repositories 2024 paper:
     doi="10.1145/3643991.3644876",
     url= {https://dgarijo.com/papers/msr_2024.pdf}
 }
-
+```
+The unidirectional evaluation makes use of [RepoFromPaper](https://github.com/StankovskiA/RepoFromPaper), which has the following workshop paper:
+```
+@article{stankovski2024,
+  title		   = {RepoFromPaper: An Approach to Extract Software Code Implementations from Scientific Publications},
+  author	   = {Stankovski, Aleksandar and Garijo, Daniel},
+  year         = {2024},
+  booktitle    = {To appear in Natural Scientific Language Processing and Research Knowledge Graphs (NSLP 2024) },
+  url          = {https://dgarijo.com/papers/stankovsi_2024.pdf}
+}
 ```
 
 ## License
