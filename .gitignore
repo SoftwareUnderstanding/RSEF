@@ -157,3 +157,4 @@ doiExtractor/
 
 *.json
 out_test.csv/*
+output/*
