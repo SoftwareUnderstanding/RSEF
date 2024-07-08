@@ -5,6 +5,7 @@ from .downloaded_to_paperObj import downloaded_to_paperObj
 from .paper_to_directionality import check_bidir, check_unidir
 from .paper_obj_utils import paperDict_to_paperObj
 from ..repofrompaper.rfp import extract_repo_links_from_pdf
+from ..extraction.paper_obj import PaperObj
 import logging
 import json
 import os
@@ -38,7 +39,7 @@ def pdf_to_paper(pdf, output_dir):
     return downloaded_to_paperObj(downloadedObj=dwnldd)
 
 
-def process_paper(paper, output_dir, bidir=True, unidir=True):
+def process_paper(paper: PaperObj, output_dir, bidir=True, unidir=True):
     """
     :param paper: paperObj
     :param output_dir: output directory
@@ -49,9 +50,9 @@ def process_paper(paper, output_dir, bidir=True, unidir=True):
     """
     if paper.doi or paper.arxiv:
         if paper.doi:
-            log.info(f"Analyzing paper with DOI: {paper.doi}")    
+            log.info(f"Analyzing paper with DOI: {paper.doi}")
         if paper.arxiv:
-            log.info(f"Analyzing paper with DOI: {paper.arxiv}")    
+            log.info(f"Analyzing paper with Arxiv ID: {paper.arxiv}")
 
         if bidir:
             try:
@@ -64,18 +65,25 @@ def process_paper(paper, output_dir, bidir=True, unidir=True):
         if unidir:
             try:
                 log.info("Checking unidirectional links")
-                repo_link, source_para = extract_repo_links_from_pdf(paper.file_path)
+                repo_link, source_para = extract_repo_links_from_pdf(
+                    paper.file_path)
                 if repo_link:
-                    extraction_method = ExtractionMethod(type='unidir', location=paper.file_path , location_type='PAPER', source_paragraph=source_para)
-                    paper.add_implementation_link(repo_link, 'git', extraction_method=extraction_method)
+                    extraction_method = ExtractionMethod(
+                        type='unidir', location=paper.file_path, location_type='PAPER', source_paragraph=source_para)
+                    paper.add_implementation_link(
+                        repo_link, 'git', extraction_method=extraction_method)
             except Exception as e:
-                log.error("Error extracting unidirectional relationship" + str(e))
+                log.error(
+                    "Error extracting unidirectional relationship: " + str(e))
                 return paper
-                
+
         log.info(f"Finished analyzing paper with DOI: {paper.doi}")
+        
+    # Clean up the paper object
+    paper.remove_duplicated_extraction_methods()
+    paper.remove_regex()
     
     return paper
-    
 
 
 def single_doi_pipeline(doi, output_dir, bidir=True, unidir=True):
@@ -142,23 +150,27 @@ def multi_doi_pipeline(list_dois, output_dir, bidir=True, unidir=True):
     """
     result = []
 
-    try:
-        for doi in list_dois:
+    for doi in list_dois:
+        try:
             paper = doi_to_paper(doi, output_dir)
 
             if not paper:
                 log.error("Error while creating paperObj")
-                return None
+                continue
+
+            if not paper.implementation_urls:
+                log.info("No implementation URLs found")
+                continue
 
             paper = process_paper(
                 paper, output_dir, bidir=bidir, unidir=unidir)
 
             result.append(paper.to_dict())
+        except Exception as e:
+            log.error(f"Error while processing {doi}")
+            log.error(str(e))
 
-        return dict_to_json({'RSEF Output': result}, output_path=os.path.join(output_dir, "url_search_output.json"))
-    except Exception as e:
-        log.error(str(e))
-        return None
+    return dict_to_json({'RSEF Output': result}, output_path=os.path.join(output_dir, "url_search_output.json"))
 
 
 def multi_doi_search(dois_txt, output_dir, bidir=True, unidir=True):
@@ -191,10 +203,11 @@ def dict_to_json(dictionary, output_path):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        with open(output_path, 'w+') as out_file:
+        with open(output_path, 'w+', encoding='utf-8') as out_file:
             json.dump(dictionary, out_file, indent=4, ensure_ascii=False)
         return output_path
     except Exception as e:
+        log.error("Error while trying to save the JSON")
         log.error(str(e))
         return None
 
@@ -224,7 +237,7 @@ def paper_objects_search(papers_json, output_dir, bidir=True, unidir=True):
         log.error(str(e))
         return
 
-    for index, obj in enumerate(paper_dicts):
+    for obj in paper_dicts:
         if obj['doi']:
             log.info(f"Analyzing directionality for {obj['doi']}")
         elif obj['arxiv']:
@@ -236,23 +249,22 @@ def paper_objects_search(papers_json, output_dir, bidir=True, unidir=True):
             return None
 
         paper = process_paper(paper, output_dir, bidir=bidir, unidir=unidir)
-
-        paper.remove_duplicated_extraction_methods()
-        paper.remove_regex()
-
+        
         try:
             paper_dict = paper.to_dict()
             save_dict_to_json(paper_dict, file_path)
         except Exception as e:
-            log.error(f"Error while converting paperObj to dict for {obj['doi']}: {e}")
+            log.error(
+                f"Error while converting paperObj to dict for {obj['doi']}: {e}")
             continue
 
     try:
         remove_empty_fields_from_file(file_path)
     except Exception as e:
         log.error(f"Error while deleting the empty values from JSON: {e}")
-        
+
     return file_path
+
 
 def safe_dic(dic, key):
     try:

@@ -74,8 +74,6 @@ The `processed_metadata.json` file contains an array of objects, each representi
 ```"SOMEF"```means that for a GitHub repository found in the paper, the repository has been examined using SOMEF to search for citations or references to the paper. The analysis found a relationship between the paper and the repository, confirming a bidirectional relationship. This is only for bidirectional relationships.
 <br>
 
-## url_search_output.json
+## example.json
 
-The `url_search_output.json` file contains an array of objects, each representing a paper after searching for unidirectional links, bidirectional links, or both.
-
-The resulting JSON has the same structure as the `processed_metadata.json`
+The `example.json` file contains an array of objects, each representing the RSEF output of a paper after searching for unidirectional and bidirectional links.

@@ -1,0 +1,99 @@
+{
+    "RSEF Output": [
+        {
+            "title": "Normalized Neural Representations of Complex Odors",
+            "implementation_urls": [
+                {
+                    "identifier": "https://github.com/david-zwicker/sensing-normalized-results",
+                    "type": "git",
+                    "paper_frequency": 2,
+                    "extraction_methods": [
+                        {
+                            "type": "unidir",
+                            "location": "output\\PDFs\\10!1371%journal!pone!0166456.pdf",
+                            "location_type": "PAPER",
+                            "source": "",
+                            "source_paragraph": "Data Availability Statement: The python source code to run the simulations and produce the figures of this paper is available at https://github.com/david-zwicker/sensing-normalized-results."
+                        }
+                    ]
+                }
+            ],
+            "doi": "10.1371/journal.pone.0166456",
+            "arxiv": "1608.01179",
+            "abstract": "AbstractThe olfactory system removes correlations in natural odors using a network of inhibitoryneurons in the olfactory bulb. It has been proposed that this network integrates the responsefrom all olfactory receptors and inhibits them equally. However, how such global inhibitioninfluences the neural representations of odors is unclear. Here, we study a simple statisticalmodel of the processing in the olfactory bulb, which leads to concentration-invariant, sparserepresentations of the odor composition. We show that the inhibition strength can be tunedto obtain sparse representations that are still useful to discriminate odors that vary in relativeconcentration, size, and composition. The model reveals two generic consequences ofglobal inhibition: (i) odors with many molecular species are more difficult to discriminate and(ii) receptor arrays with heterogeneous sensitivities perform badly. Comparing these predic-tions to experiments will help us to understand the role of global inhibition in shaping normal-ized odor representations in the olfactory bulb.IntroductionSensory systems encode information efficiently by removing redundancies present in naturalstimuli [1, 2]. In natural images, for instance, neighboring regions are likely of similar bright-ness and the image can thus be characterized by the regions of brightness changes [3]. Thisstructure is exploited by ganglion cells in the retina that respond to brightness gradients byreceiving excitatory input from photo receptors in one location and inhibitory input from thesurrounding [4]. This typical center-surround inhibition results in neural patterns that repre-sent natural images efficiently [5]. Similarly, such local inhibition helps separating sound fre-quencies in the ear and locations touched on the skin [6]. Vision, hearing, and touch have incommon that their stimulus spaces have a metric for which typical correlations in natural sti-muli are local. Consequently, local inhibition can be used to remove these correlations andreduce the high-dimensional input to a lower-dimensional representation.The olfactory stimulus space is also high-dimensional, since odors are comprised of manymolecules at different concentrations. Moreover, the concentrations are also often correlated,e.g., because the molecules originate from the same source. However, these correlations arePLOS ONE | DOI:10.1371/journal.pone.0166456 November 11, 2016 1 / 16a11111OPENACCESSCitation: Zwicker D (2016) Normalized NeuralRepresentations of Complex Odors. PLoS ONE11(11): e0166456. doi:10.1371/journal.pone.0166456Editor: Hiroaki Matsunami, Duke University,UNITED STATESReceived: August 18, 2016Accepted: October 29, 2016Published: November 11, 2016Copyright: © 2016 David Zwicker. This is an openaccess article distributed under the terms of theCreative Commons Attribution License, whichpermits unrestricted use, distribution, andreproduction in any medium, provided the originalauthor and source are credited.Data Availability Statement: The python sourcecode to run the simulations and produce thefigures of this paper is available at https://github.com/david-zwicker/sensing-normalized-results.",
+            "file_name": "10!1371%journal!pone!0166456.pdf",
+            "file_path": "output\\PDFs\\10!1371%journal!pone!0166456.pdf"
+        },
+        {
+            "title": "Speciation in a MacArthur model predicts growth, stability, and adaptation in ecosystem dynamics",
+            "implementation_urls": [
+                {
+                    "identifier": "https://doi.org/10.5281/zenodo.7164175",
+                    "type": "zenodo",
+                    "paper_frequency": 1,
+                    "extraction_methods": [
+                        {
+                            "type": "bidir",
+                            "location": "ZENODO",
+                            "location_type": "ARXIV",
+                            "source": "RSEF",
+                            "source_paragraph": ""
+                        }
+                    ]
+                }
+            ],
+            "doi": "10.1007/s12080-023-00564-2",
+            "arxiv": "1803.00487",
+            "abstract": "AbstractEcosystem dynamics is often considered driven by a coupling of species’ resource consumption and its population size dynamics. Such resource-population dynamics is captured by MacArthur-type models. One biologically relevant feature that would also need to be captured by such models is the introduction of new and different species. Speciation introduces a stochastic component in the otherwise deterministic MacArthur theory. We describe here how speciation can be implemented to yield a model that is consistent with current theory on equilibrium resource-consumer models, but also displays readily observable rank diversity metric changes. The model also reproduces a priority effect. Adding speciation to a MacArthur-style model provides an attractively simple extension to explore the rich dynamics in evolving ecosystems.Keywords Environmental stochasticity · Population dynamics · Evolution · CoexistenceIntroductionAn ecosystem is a set of species, each of finite population size that interact by competing for finite resources that fuel their growth. A single ecosystem can involve dynamics that occurs over a wide range of length and timescales (Azaele et al. 2016); Darwin already eloquently referred to this in his “tangled bank” remark. The seemingly universal nature of a species’ emergence, adaptation and extinction in such ecosystems, has inspired many to describe the phenomenol-ogy of ecosystem dynamics with simple modeling with only a few ingredients that are independent of the specific physi-cal mechanisms at play (Nowak 2006; Azaele et al. 2016). What is then the simplest quantitative description that dis-plays all the salient dynamical features of evolution? This question has a long list of partial answers (Nowak 2006; Tikhonov 2016; Posfai et al. 2017), although much work in the field concerns equilibria (MacArthur and Wilson 1963; MacArthur 1955; Chesson 1990; Hubbell 2001). Here, we show that the already successful variants of MacArthur models can be amended with a simple stochastic mechanism that introduces new species, which allows us to show many of the biologically relevant dynamical features of evolution even when the starting point for the dynamics is a single pri-mordial ancestor. In particular, our MacArthur model variant can describe the growth dynamics of an ecosystem in terms of species richness, its evolution towards a dynamic equilib-rium size, and even its adaptation to resource influx changes. The predictions of the model are consistent with other exist-ing modeling on, for example, equilibrium dynamics and reasonably in line with common observations on, for exam-ple, resource shock experiments.The speciating MacArthur modelEvolutionary dynamics modeling including MacArthur type models usually starts with describing population dynamics as ṅ(t) = n(t)f (n) with n the set of species population sizes and the dot denotes a time derivative. The crux is that f (n) is not constant but a growth rate determining function that depends on ecosystem features such as population sizes and coupling constants which specify inter-species competition and preying efficiency (Wangersky 1978; Cressman and Tao 2014). This general approach is tremendously successful ",
+            "file_name": "10!1007%s12080-023-00564-2.pdf",
+            "file_path": "output\\PDFs\\10!1007%s12080-023-00564-2.pdf"
+        },
+        {
+            "title": "Chance, long tails, and inference in a non-Gaussian, Bayesian theory of vocal learning in songbirds",
+            "implementation_urls": [
+                {
+                    "identifier": "https://github.com/EmoryUniversityTheoreticalBiophysics/NonGaussianLearning",
+                    "type": "git",
+                    "paper_frequency": 2,
+                    "extraction_methods": [
+                        {
+                            "type": "bidir",
+                            "location": "DESCRIPTION",
+                            "location_type": "TITLE",
+                            "source": "SOMEF",
+                            "source_paragraph": ""
+                        },
+                        {
+                            "type": "bidir",
+                            "location": "REPO_TITLE",
+                            "location_type": "TITLE",
+                            "source": "SOMEF",
+                            "source_paragraph": ""
+                        },
+                        {
+                            "type": "unidir",
+                            "location": "output\\PDFs\\10!1073%pnas!1713020115.pdf",
+                            "location_type": "PAPER",
+                            "source": "",
+                            "source_paragraph": "Data deposition: The code and data reported in this paper have been deposited on GitHub and are available at https://github.com/EmoryUniversityTheoreticalBiophysics/NonGaussianLearning."
+                        }
+                    ]
+                }
+            ],
+            "doi": "10.1073/pnas.1713020115",
+            "arxiv": "1707.07247",
+            "abstract": null,
+            "file_name": "10!1073%pnas!1713020115.pdf",
+            "file_path": "output\\PDFs\\10!1073%pnas!1713020115.pdf"
+        },
+        {
+            "title": "Precision and accuracy of single-molecule FRET measurements—a multi-laboratory benchmark study",
+            "implementation_urls": [],
+            "doi": "10.1038/s41592-018-0085-0",
+            "arxiv": "1710.03807",
+            "abstract": null,
+            "file_name": "10!1038%s41592-018-0085-0.pdf",
+            "file_path": "output\\PDFs\\10!1038%s41592-018-0085-0.pdf"
+        }
+    ]
+}

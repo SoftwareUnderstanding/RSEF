@@ -1,10 +1,10 @@
 class ExtractionMethod:
     def __init__(self, type, location="", location_type="", source="", source_paragraph=""):
-        self._type = type
-        self._location = location
-        self._location_type = location_type
-        self._source = source
-        self._source_paragraph = source_paragraph
+        self._type: str = type
+        self._location: str = location
+        self._location_type: str = location_type
+        self._source: str = source
+        self._source_paragraph: str = source_paragraph
 
     def __str__(self):
         return f"type: {self._type}\nlocation: {self._location}\nlocation_type: {self._location_type}\nsource: {self._source}\nsource_paragraph: {self._source_paragraph}\n"

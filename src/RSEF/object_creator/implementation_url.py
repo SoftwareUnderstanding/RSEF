@@ -1,12 +1,11 @@
-from ..object_creator.extraction_method import ExtractionMethod
-
+from .extraction_method import ExtractionMethod
 
 class ImplementationUrl:
     def __init__(self, identifier, type, paper_frequency, extraction_methods):
-        self._identifier = identifier
-        self._type = type
-        self._paper_frequency = paper_frequency
-        self._extraction_methods = extraction_methods if extraction_methods is not None else []
+        self._identifier: str = identifier
+        self._type: str = type
+        self._paper_frequency: int = paper_frequency
+        self._extraction_methods: list[ExtractionMethod] = extraction_methods if extraction_methods else []
 
     def __str__(self):
         return "URL: %s\nURL Type: %s\nFrequency: %s\nExtraction Methods: %s\n" % \
@@ -52,7 +51,7 @@ class ImplementationUrl:
             "identifier": self._identifier,
             "type": self._type,
             "paper_frequency": self._paper_frequency,
-            "extraction_methods": [em for em in self._extraction_methods] 
+            "extraction_methods": [em.to_dict() for em in self._extraction_methods] 
         }
 
     @staticmethod
@@ -61,5 +60,5 @@ class ImplementationUrl:
             identifier=dic["identifier"],
             type=dic["type"],
             paper_frequency=dic["paper_frequency"],
-            extraction_methods=dic["extraction_methods"]
+            extraction_methods= [ExtractionMethod.from_dict(em) for em in dic["extraction_methods"]]
         )
