@@ -5,6 +5,7 @@ from .downloaded_to_paperObj import downloaded_to_paperObj
 from .paper_to_directionality import check_bidir, check_unidir
 from .paper_obj_utils import paperDict_to_paperObj
 from ..repofrompaper.rfp import extract_repo_links_from_pdf
+from ..extraction.paper_obj import PaperObj
 import logging
 import json
 import os
@@ -38,7 +39,7 @@ def pdf_to_paper(pdf, output_dir):
     return downloaded_to_paperObj(downloadedObj=dwnldd)
 
 
-def process_paper(paper, output_dir, bidir=True, unidir=True):
+def process_paper(paper: PaperObj, output_dir, bidir=True, unidir=True):
     """
     :param paper: paperObj
     :param output_dir: output directory
@@ -51,7 +52,7 @@ def process_paper(paper, output_dir, bidir=True, unidir=True):
         if paper.doi:
             log.info(f"Analyzing paper with DOI: {paper.doi}")
         if paper.arxiv:
-            log.info(f"Analyzing paper with DOI: {paper.arxiv}")
+            log.info(f"Analyzing paper with Arxiv ID: {paper.arxiv}")
 
         if bidir:
             try:
@@ -70,10 +71,10 @@ def process_paper(paper, output_dir, bidir=True, unidir=True):
                     extraction_method = ExtractionMethod(
                         type='unidir', location=paper.file_path, location_type='PAPER', source_paragraph=source_para)
                     paper.add_implementation_link(
-                        repo_link, 'git', extraction_method=extraction_method.to_dict())
+                        repo_link, 'git', extraction_method=extraction_method)
             except Exception as e:
                 log.error(
-                    "Error extracting unidirectional relationship" + str(e))
+                    "Error extracting unidirectional relationship: " + str(e))
                 return paper
 
         log.info(f"Finished analyzing paper with DOI: {paper.doi}")

@@ -27,7 +27,7 @@ def downloaded_to_paperObj(downloadedObj):
             for url_type, url_list in urls_dict.items():
                 for url in url_list:
                     extraction_method = ExtractionMethod(type="regex", location="", location_type="", source="", source_paragraph="")
-                    implementation_url = ImplementationUrl(identifier=url['url'], type=url_type, paper_frequency=url['#_appearances'], extraction_methods=[extraction_method.to_dict()]
+                    implementation_url = ImplementationUrl(identifier=url['url'], type=url_type, paper_frequency=url['#_appearances'], extraction_methods=[extraction_method]
                     )
                     urls.append(implementation_url.to_dict())
         abstract = get_possible_abstract(pdf_data_list)
