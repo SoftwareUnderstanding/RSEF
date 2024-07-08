@@ -1,6 +1,3 @@
-from ..object_creator.extraction_method import ExtractionMethod
-
-
 class ImplementationUrl:
     def __init__(self, identifier, type, paper_frequency, extraction_methods):
         self._identifier = identifier
