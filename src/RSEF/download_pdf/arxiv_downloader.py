@@ -35,7 +35,7 @@ def download_pdf(url, output_dir):
     try:
         r = requests.get(url)
         if r.status_code != 200:
-            logging.error("Failed to download PDF from URL: %s (Status Code: %s)", url, r.status_code)
+            logging.debug("Failed to download PDF from URL: %s (Status Code: %s)", url, r.status_code)
             return None
         output_path = os.path.join(output_dir, url.split('/')[-1])
         with open(output_path, 'wb') as f:
@@ -43,7 +43,6 @@ def download_pdf(url, output_dir):
         return output_path
     except Exception as e:
         logging.error("Issue when trying to download Arxiv PDF %s", str(e))
-        print("-------------------------------")
         return None
 
 

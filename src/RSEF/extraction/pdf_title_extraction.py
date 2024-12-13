@@ -26,7 +26,7 @@ def use_pdf_title(pdf):
     """
     pdf = os.path.abspath(pdf)
     if not os.path.exists(pdf):
-        logging.error(f"PDF file not found at path: {pdf}")
+        logging.debug(f"PDF file not found at path: {pdf}")
         return None
     # Runs the pdftitle module as a subprocess and communicate with it
     try:
@@ -36,7 +36,7 @@ def use_pdf_title(pdf):
         # Extracts and returns the pdf title from stdout
         pdf_title = stdout.strip()
         if pdf_title == "":
-            logging.error("Issue extracting Pdf title")
+            logging.debug("Issue extracting Pdf title")
             return None
         return pdf_title
     except Exception as e:

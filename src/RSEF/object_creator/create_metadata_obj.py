@@ -6,6 +6,10 @@ from ..utils.regex import (
     str_to_arxivID,
     str_to_doiID
 )
+import logging
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
 
 
 def extract_arxivID (openAlexJson):
@@ -27,23 +31,22 @@ def doi_to_metadataObj(doi):
     metadata Object
     """
     if not (doi := str_to_doiID(doi)):
-        print("Not a doi")
         return None
     try:
         try:
             oa_meta = query_openalex_api(doi)
         except Exception as e:
-            print(str(e))
+            log.error(str(e))
             return None
         if oa_meta is None:
-            print("No meta")
+            log.debug("No meta")
         titL = safe_dic(oa_meta, "title")
         doi = str_to_doiID(safe_dic(oa_meta, "doi"))
         arxiv = extract_arxivID(oa_meta)
         metadata = MetadataObj(title=titL, doi=doi, arxiv=arxiv)
         return metadata
     except Exception as e:
-        print(str(e))
+        log.error(str(e))
 
 # def title_to_meta_obj(title):
 #     oa_meta = pdf_title_to_meta(title)
@@ -65,7 +68,6 @@ def doi_to_metaDict(doi):
         V: metadataObj.to_dict
     """
     if not (doi:=str_to_doiID(doi)):
-        print("Not a doi")
         return None
     mt_dict = doi_to_metadataObj(doi).to_dict()
     result = {mt_dict["doi"]: mt_dict}

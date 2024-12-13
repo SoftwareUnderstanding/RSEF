@@ -30,7 +30,7 @@ def query_openalex_api(doi):
     try:
         response = requests.get(url)
         if response.status_code != 200:
-            logging.error("HTTP request failed with status code: %s", response.status_code)
+            logging.debug("HTTP request failed with status code: %s", response.status_code)
             return None
         data = response.json()
         return data

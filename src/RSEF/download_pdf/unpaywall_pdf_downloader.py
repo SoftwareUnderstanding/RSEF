@@ -34,20 +34,16 @@ def doi_to_downloaded_pdf(url, doi, output_dir):
     # Check if no pdf has been found
     if not pdf:
         logging.error(f"Failed to download the pdf for {str(doi)} with {str(url)}")
-        print("-------------------------------")
         return None
     # if success
     try:
         pdf_filepath = os.path.join(output_dir, file_name)
         with open(pdf_filepath, 'wb') as f:  # here download the pdf
             f.write(pdf)
-            print("PDF was downloaded successfully")
-            print("-------------------------------")
-            logging.info('written pdf successfully')
+            logging.debug('written pdf successfully')
         return pdf_filepath
     except Exception as e:
         logging.error(f"Exception! Failed to download the pdf for {str(doi)} with {str(url)}, {str(e)}")
-        print("-------------------------------")
         return None
 
 
@@ -195,8 +191,7 @@ def _unpaywall_response_to_json(url: str):
         return json_idk
     except Exception as e:
         logging.error(f"Issue while trying to get the unpaywall response {str(e)}")
-        logging.error(f"Failed to download the pdf")
-        print("-------------------------------")
+        logging.error(f"Failed to download the pdf\n")
         return None
 
 
