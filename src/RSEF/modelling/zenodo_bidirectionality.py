@@ -87,7 +87,7 @@ def _github_zenodo_bidirectional(paper_obj, list_githubs, output_dir):
         repo_file = download_repo_metadata(github, output_dir)
 
         if not repo_file:
-            logging.error(f"Issue while downloading the repository for {paper_obj.to_dict}")
+            logging.debug(f"Issue while downloading the repository for {paper_obj.to_dict}")
             continue
         # assessment of bidirectionality
 

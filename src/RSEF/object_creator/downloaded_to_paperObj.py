@@ -127,7 +127,7 @@ def paperObj_ppDict(paper):
                 return ans
             return {paper.doi: paper.to_dict()}
         else:
-            logging.error("paper is None; cannot process.")
+            logging.debug("paper is None; cannot process.")
             return None
     except Exception as e:
         logging.error("An error occurred while processing paper with DOI %s: %s", paper.doi, str(e))

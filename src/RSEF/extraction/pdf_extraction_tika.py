@@ -22,7 +22,7 @@ def raw_read_pdf(pdf_path) -> str:
         parsed = parser.from_file(path)
         content = parsed.get('content', None)
         if not content:
-            logging.error("Issue when retrieving pdf content TIKA")
+            logging.debug("Issue when retrieving pdf content TIKA")
         return content
     except FileNotFoundError:
         logging.error(f"PDF file not found at path: {pdf_path}")
@@ -35,7 +35,7 @@ def raw_read_pdf(pdf_path) -> str:
 def raw_to_list(raw_pdf_data: str) -> list:
 
     if not raw_pdf_data:
-        logging.error(f"ERROR converting from raw pdf to list pdf, {raw_pdf_data}")
+        logging.debug(f"converting from raw pdf to list pdf, {raw_pdf_data}")
         return []
 
     list_pdf_data = raw_pdf_data.split('\n')
@@ -114,6 +114,7 @@ def find_abstract_index(pdf_data: list) -> int:
     except Exception as e:
         logging.warning(f"Failed to Extract the abstract {str(e)}")
         return -1
+    return index
 
 
 def get_possible_abstract(pdf_data: list) -> str:
@@ -245,10 +246,10 @@ def extract_urls(raw_pdf_data: str, list_pdf_data: list) -> dict:
     #list_pdf_data = raw_to_list(raw_pdf_data)
     urls = {}
     if not raw_pdf_data:
-        logging.error("Extract Urls: raw_pdf_data is None or Empty")
+        logging.debug("Extract Urls: raw_pdf_data is None or Empty")
         return urls
     if not list_pdf_data:
-        logging.error("Extract Urls: list_pdf_data is None or Empty")
+        logging.debug("Extract Urls: list_pdf_data is None or Empty")
         return urls
 
     list_git_urls = ranked_git_url(list_pdf_data)

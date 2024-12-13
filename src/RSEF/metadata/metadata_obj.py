@@ -39,3 +39,6 @@ class MetadataObj:
             'doi': self._doi,
             'arxiv': self.arxiv,
         }
+        
+    def __str__(self):
+        return f"Title: {self._title}, DOI: {self._doi}, Arxiv: {self._arxiv}"

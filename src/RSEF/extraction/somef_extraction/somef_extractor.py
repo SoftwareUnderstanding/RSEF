@@ -62,10 +62,10 @@ def download_repo_metadata(url, output_folder_path):
     None if failure/invalid input
     """
     if not is_valid_repo_url(url):
-        logging.error("download_repo_metadata: URL given is not a valid github/gitlab url")
+        logging.debug("download_repo_metadata: URL given is not a valid github/gitlab url")
         return None
     if not output_folder_path:
-        logging.error("download_repo_metadata: No output path")
+        logging.debug("download_repo_metadata: No output path")
         return None
     pattern = r'(?:http|https)://(?:gitlab\.com|github\.com)/'
     replacement = ''
@@ -80,7 +80,7 @@ def download_repo_metadata(url, output_folder_path):
 
     output_file_path = os.path.join(output_folder_path, file)
     if os.path.exists(output_file_path):
-        print('Already created a file: ' + output_file_path)
+        logging.debug('Already created a file: ' + output_file_path)
         return output_file_path
     else:
         try:

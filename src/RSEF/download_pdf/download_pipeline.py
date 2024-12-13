@@ -6,9 +6,6 @@ from .arxiv_downloader import download_pdf as download_arxiv_pdf
 from .unpaywall_pdf_downloader import doi_to_downloaded_pdf
 
 
-
-
-
 def pdf_download_pipeline(id, output_directory):
     """
     Verifies whether the input is an arXiv DOI or another DOI.
@@ -29,16 +26,15 @@ def pdf_download_pipeline(id, output_directory):
             # Creates Directory if it does not exist
             os.mkdir(pdf_output_directory)
     except Exception as e:
-        print("Error while trying to create the directory  Err @ PDF download")
-        print(str(e))
+        logging.error(f"Error while trying to create the directory  Err @ PDF download {str(e)}")
 
-    print(f"Attempting to download pdf for {str(id)}")
+    logging.debug(f"Attempting to download pdf for {str(id)}")
     if (file_path := download_arxiv_pdf(id, pdf_output_directory)):
         return file_path
     else:
         url = paywall_url(id)
         if not url:
-            logging.error("We are only able to download pdfs via arxiv or doi for now, sorry")
+            logging.debug("We are only able to download pdfs via arxiv or doi for now, sorry")
             return None
         file_path = doi_to_downloaded_pdf(url, id, pdf_output_directory)
     if file_path:

@@ -49,40 +49,39 @@ def process_paper(paper: PaperObj, output_dir, bidir=True, unidir=True):
     paperObj with URLs found based on the specified pipeline types
     """
     if paper.doi or paper.arxiv:
-        if paper.doi:
-            log.info(f"Analyzing paper with DOI: {paper.doi}")
-        if paper.arxiv:
-            log.info(f"Analyzing paper with Arxiv ID: {paper.arxiv}")
-
+        if not paper.implementation_urls:
+            log.info("No implementation URLs present in the paper object!")
+            return paper
+        
         if bidir:
             try:
                 log.info("Checking bidirectional links")
                 paper = check_bidir(paper, output_dir)
+                
             except Exception as e:
                 log.error("Error extracting bidirectional relationship" + str(e))
-                return paper
 
         if unidir:
             try:
                 log.info("Checking unidirectional links")
+                
                 repo_link, source_para = extract_repo_links_from_pdf(
                     paper.file_path)
+                
                 if repo_link:
                     extraction_method = ExtractionMethod(
                         type='unidir', location=paper.file_path, location_type='PAPER', source_paragraph=source_para)
                     paper.add_implementation_link(
                         repo_link, 'git', extraction_method=extraction_method)
+                    
             except Exception as e:
                 log.error(
                     "Error extracting unidirectional relationship: " + str(e))
-                return paper
 
-        log.info(f"Finished analyzing paper with DOI: {paper.doi}")
-        
     # Clean up the paper object
     paper.remove_duplicated_extraction_methods()
     paper.remove_regex()
-    
+
     return paper
 
 
@@ -98,7 +97,6 @@ def single_doi_pipeline(doi, output_dir, bidir=True, unidir=True):
     paper = doi_to_paper(doi, output_dir)
 
     if not paper:
-        log.error("Error while creating paperObj")
         return None
 
     paper = process_paper(paper, output_dir, bidir=bidir, unidir=unidir)
@@ -151,15 +149,12 @@ def multi_doi_pipeline(list_dois, output_dir, bidir=True, unidir=True):
     result = []
 
     for doi in list_dois:
+        log.info(f"Analyzing DOI: {doi}")
         try:
             paper = doi_to_paper(doi, output_dir)
 
             if not paper:
-                log.error("Error while creating paperObj")
-                continue
-
-            if not paper.implementation_urls:
-                log.info("No implementation URLs found")
+                log.debug("Error while creating paperObj")
                 continue
 
             paper = process_paper(
@@ -169,6 +164,9 @@ def multi_doi_pipeline(list_dois, output_dir, bidir=True, unidir=True):
         except Exception as e:
             log.error(f"Error while processing {doi}")
             log.error(str(e))
+        finally:
+            log.info(f"Finished analyzing DOI: {doi}")
+            print("-------------------------------\n")
 
     return dict_to_json({'RSEF Output': result}, output_path=os.path.join(output_dir, "url_search_output.json"))
 
@@ -249,7 +247,7 @@ def paper_objects_search(papers_json, output_dir, bidir=True, unidir=True):
             return None
 
         paper = process_paper(paper, output_dir, bidir=bidir, unidir=unidir)
-        
+
         try:
             paper_dict = paper.to_dict()
             save_dict_to_json(paper_dict, file_path)

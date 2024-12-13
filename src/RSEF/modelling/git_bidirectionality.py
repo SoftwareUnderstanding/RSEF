@@ -28,7 +28,7 @@ def is_it_bidir(paper_obj, repo_json):
 
     """
     if not (repo_data := load_json(repo_json)):
-        logging.error("is_it_bidir: Error while trying to open repository JSON")
+        logging.debug("is_it_bidir: Error while trying to open repository JSON")
         return None
     bidir_locations = []
     if doi := paper_obj.doi:
