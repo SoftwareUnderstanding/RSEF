@@ -1,8 +1,12 @@
 # TODO find appropiate names
 import json
-from RSEF.object_creator.create_downloadedObj import json_to_downloaded_obj
-from RSEF.repofrompaper.utils.constants import PROCESSED_PATH, DOWNLOADED_PATH, ASSES_PATH
+from RSEF.repofrompaper.utils.constants import PROCESSED_PATH, ASSES_PATH
 from .object_creator.pipeline import multi_doi_search, paper_objects_search, single_doi_pipeline
+from .object_creator.create_downloadedObj import doi_to_downloadedJson, dois_txt_to_downloadedJson
+from .object_creator.downloaded_to_paperObj import dwnlddJson_to_paperJson
+from .object_creator.create_downloadedObj import pdf_to_downloaded_obj, json_to_downloaded_obj
+from .object_creator.downloaded_to_paperObj import dwnldd_obj_to_paper_dic
+from .output_analysis.analysis import output_analysis
 from . import __version__
 import click
 import os
@@ -40,6 +44,9 @@ def cli():
          repository is a proposed implementation given its context.\n
          - Bidirectional: A code implementation link is found in a paper, and 
          the code repository contains a link back to the paper (title, DOI) \n
+    3. (process)  Process downloaded metadata to create a JSON file with the
+         metadata of the papers.\n
+    4. (analyze)  Analyze the output of the assess command.\n
 
 
     """
@@ -121,8 +128,6 @@ def assess(input, output, unidir, bidir):
 @click.option('--input', '-i', required=True, help="DOI or path to .txt list of DOIs", metavar='<name>')
 @click.option('--output', '-o', default="./", show_default=True, help="Output Directory ", metavar='<path>')
 def download(input, output):
-    from .object_creator.create_downloadedObj import doi_to_downloadedJson, dois_txt_to_downloadedJson
-
     if input.endswith(".txt") and os.path.exists(input):
         dois_txt_to_downloadedJson(dois_txt=input, output_dir=output)
     else:
@@ -134,9 +139,6 @@ def download(input, output):
 
 
 def process(input, json, output):
-    from .object_creator.downloaded_to_paperObj import dwnlddJson_to_paperJson, dwnldd_obj_to_paper_json
-    from .object_creator.create_downloadedObj import pdf_to_downloaded_obj, json_to_downloaded_obj
-
     # Clear the content of the file processed_metadata.json
     processed_metadata_path = output + PROCESSED_PATH
     if os.path.exists(processed_metadata_path):
@@ -164,12 +166,14 @@ def process(input, json, output):
     else:
         print("Error")
         return
-
-
+    
+@cli.command()
+@click.option('--input', '-i', required=True, help="Path to RSEF assess JSON output", metavar='<name>')
+@click.option('--output', '-o', default="output/output_analysis.json", show_default=True, help="Output Directory ", metavar='<path>')
+def analyze(input, output):
+    output_analysis(input, output)
+    
 def _aux_pdfs_to_pp_json(input, output):
-    from .object_creator.create_downloadedObj import pdf_to_downloaded_obj
-    from .object_creator.downloaded_to_paperObj import dwnldd_obj_to_paper_dic
-    import json
     try:
         result = {}
         for pdfFile in os.listdir(input):
@@ -185,8 +189,6 @@ def _aux_pdfs_to_pp_json(input, output):
                         log.error(
                             f"Error updating result with pp_dic: {str(update_error)}")
                         continue
-                        print(pp_dic)
-                        print(pdfFile)
             except Exception as file_error:
                 log.error(f"Error processing file: {str(file_error)}")
                 continue

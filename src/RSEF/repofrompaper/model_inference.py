@@ -20,6 +20,10 @@ def get_top_sentences(sentences: List[str], top_k: int = 5) -> List[str]:
             scores = softmax(logits, dim=1).detach().numpy()[0]
             positive_score = scores[1]
 
+            # Keep sentences with a score higher than 0.9
+            if positive_score < 0.9:
+                continue
+            
             # If the heap is not full or the current sentence has a higher score than the smallest score in the heap
             if len(top_sentences) < top_k or positive_score > top_sentences[0][0]:
                 heappush(top_sentences, (positive_score, sentence))
