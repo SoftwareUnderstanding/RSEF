@@ -151,11 +151,19 @@ Validated with a corpus of **154 papers and repositories**, containing various f
 The unidirectional evaluation makes use of [RepoFromPaper](https://github.com/StankovskiA/RepoFromPaper), which has the following NSLP2024 workshop paper:
 ```
 @article{stankovski2024,
-  title		   = {RepoFromPaper: An Approach to Extract Software Code Implementations from Scientific Publications},
-  author	   = {Stankovski, Aleksandar and Garijo, Daniel},
-  year         = {2024},
-  booktitle    = {To appear in Natural Scientific Language Processing and Research Knowledge Graphs (NSLP 2024) },
-  url          = {https://dgarijo.com/papers/stankovsi_2024.pdf}
+    author="Stankovski, Aleksandar
+    and Garijo, Daniel",
+    editor="Rehm, Georg
+    and Dietze, Stefan
+    and Schimmler, Sonja
+    and Kr{\"u}ger, Frank",
+    title="RepoFromPaper: An Approach to Extract Software Code Implementations from Scientific Publications",
+    booktitle="Natural Scientific Language Processing and Research Knowledge Graphs",
+    year="2024",
+    publisher="Springer Nature Switzerland",
+    address="Cham",
+    pages="100--113",
+    isbn="978-3-031-65794-8"
 }
 ```
 
