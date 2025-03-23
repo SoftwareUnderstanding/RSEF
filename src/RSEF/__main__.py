@@ -81,7 +81,6 @@ def cli():
 @click.option('--unidir', '-U', is_flag=True, default=False, help="Unidirectionality")
 @click.option('--bidir', '-B', is_flag=True, default=False, help="Bidirectionality")
 def assess(input, output, unidir, bidir):
-
     # Clear the content of the url_search_output.json
     url_search_output_path = output + ASSES_PATH
     if os.path.exists(url_search_output_path):        

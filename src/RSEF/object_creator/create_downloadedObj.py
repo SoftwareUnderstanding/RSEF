@@ -29,7 +29,15 @@ def meta_to_dwnldd(metadataObj, output_dir):
         if not file_path:
             return None
         file_name = os.path.basename(file_path)
-        return DownloadedObj(title=metadataObj.title,doi=metadataObj.doi,arxiv=metadataObj.arxiv,file_name=file_name,file_path=file_path)
+        return DownloadedObj(
+                title=metadataObj.title,
+                doi=metadataObj.doi,
+                arxiv=metadataObj.arxiv,
+                publication_date=metadataObj.publication_date,
+                authors=metadataObj.authors,
+                file_name=file_name,
+                file_path=file_path
+            )
     except Exception as e:
         try:
             meta_doi = str(metadataObj.doi)
@@ -63,9 +71,11 @@ def downloadedDic_to_downloadedObj(dwnldd_dict):
     title = safe_dic(dwnldd_dict, "title")
     doi = safe_dic(dwnldd_dict, "doi")
     arxiv = safe_dic(dwnldd_dict, "arxiv")
+    publication_date = safe_dic(dwnldd_dict, "publication_date")
+    authors = safe_dic(dwnldd_dict, "authors")
     file_name = safe_dic(dwnldd_dict, "file_name")
     file_path = safe_dic(dwnldd_dict, "file_path")
-    return DownloadedObj(title=title, doi=doi, arxiv=arxiv, file_name=file_name, file_path=file_path)
+    return DownloadedObj(title=title, doi=doi, arxiv=arxiv, publication_date=publication_date, authors=authors, file_name=file_name, file_path=file_path)
 
 
 def metaDict_to_downloaded(meta_dict, output_dir):
@@ -131,9 +141,11 @@ def _doi_to_downloaded_obj_backup(id,output_dir):
         match = re.match(DOI_REGEX, id, re.IGNORECASE)
         if match: # id is a doi
             return DownloadedObj(title=extract_pdf_title(pdf_path=file_path), doi=id, arxiv=None,
+                                 publication_date=None, authors=None,
                                 file_name=os.path.basename(file_path), file_path=file_path)
         else: # id is an arxiv
             return DownloadedObj(title=extract_pdf_title(pdf_path=file_path), doi=None, arxiv=id,
+                                 publication_date=None, authors=None,
                                 file_name=os.path.basename(file_path), file_path=file_path)
     except Exception as e:
         logging.error(f"An error occurred in _doi_to_downloaded_obj_backup: {str(e)}")
@@ -196,7 +208,9 @@ def pdf_to_downloaded_obj(pdf,output_dir):
     titL = safe_dic(resp_jsn, "title")
     doi = str_to_doiID(safe_dic(resp_jsn, "doi"))
     arxiv = extract_arxivID(resp_jsn)
-    return DownloadedObj(title=titL,doi=doi,arxiv=arxiv,file_name="",file_path=pdf)
+    publication_date = safe_dic(resp_jsn, "publication_date")
+    authors = safe_dic(resp_jsn, "authors")
+    return DownloadedObj(title=titL,doi=doi,arxiv=arxiv,publication_date=publication_date, authors=authors,file_name="",file_path=pdf)
 
 # Download papers from a json containing title, doi, primary location (PDF's URL)
 def json_to_downloaded_obj(json_data, output_dir):

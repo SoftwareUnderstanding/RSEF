@@ -34,9 +34,21 @@ def downloaded_to_paperObj(downloadedObj):
         title = downloadedObj.title
         doi = downloadedObj.doi
         arxiv = downloadedObj.arxiv
+        publication_date = downloadedObj.publication_date
+        authors = downloadedObj.authors
         file_name = downloadedObj.file_name
         file_path = downloadedObj.file_path
-        return PaperObj(title=title, implementation_urls=urls, doi=doi, arxiv=arxiv, abstract=abstract, file_name=file_name, file_path=file_path)
+        return PaperObj(
+            title=title, 
+            implementation_urls=urls, 
+            doi=doi, 
+            arxiv=arxiv, 
+            abstract=abstract, 
+            publication_date=publication_date, 
+            authors=authors, 
+            file_name=file_name, 
+            file_path=file_path
+        )
     except Exception as e:
         print(str(e))
         print("Error while trying to read from the pdf")
