@@ -3,18 +3,22 @@ from ..utils.regex import str_to_doiID, str_to_arxivID
 
 
 class PaperObj:
-    def __init__(self, title, implementation_urls, doi, arxiv, abstract, file_name, file_path):
+    def __init__(self, title, implementation_urls, doi, arxiv, abstract, publication_date, authors, file_name, file_path):
         self._title: str = title
         self._implementation_urls: list[ImplementationUrl] = [
             ImplementationUrl.from_dict(url) for url in implementation_urls]
         self._doi: str = str_to_doiID(doi)
         self._arxiv: str = str_to_arxivID(arxiv)
+        self._abstract: str = abstract
+        self.publication_date = publication_date
+        self.authors = authors
         self._file_name: str = file_name
         self._file_path: str = file_path
-        self._abstract: str = abstract
 
     def __str__(self):
-        return f"Title: {self._title}\nImplementation URLs: {self._implementation_urls}\nDOI: {self._doi}\nArXiv: {self._arxiv}\nAbstract: {self._abstract}\nFile Name: {self._file_name}\nFile Path: {self._file_path}"
+        return f"Title: {self._title}\nImplementation URLs: {self._implementation_urls}\nDOI: {self._doi}\n\
+                ArXiv: {self._arxiv}\nAbstract: {self._abstract}\nPublication Date: {self.publication_date}\n\
+                Authors: {self.authors}\nFile Name: {self._file_name}\nFile Path: {self._file_path}"
 
     def __repr__(self):
         return self.__str__()
@@ -148,6 +152,22 @@ class PaperObj:
     @file_path.setter
     def file_path(self, value):
         self._file_path = value
+        
+    @property
+    def publication_date(self):
+        return self._publication_date
+    
+    @publication_date.setter
+    def publication_date(self, value):
+        self._publication_date = value
+        
+    @property
+    def authors(self):
+        return self._authors
+    
+    @authors.setter
+    def authors(self, value):
+        self._authors = value
 
     def to_dict(self):
         return {
@@ -156,6 +176,8 @@ class PaperObj:
             'doi': self._doi,
             'arxiv': self._arxiv,
             'abstract': self._abstract,
+            'publication_date': self.publication_date,
+            'authors': ", ".join(self.authors) if self.authors else "",
             'file_name': self._file_name,
             'file_path': self._file_path
         }

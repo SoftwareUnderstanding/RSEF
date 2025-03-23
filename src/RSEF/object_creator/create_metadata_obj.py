@@ -38,13 +38,20 @@ def doi_to_metadataObj(doi):
         except Exception as e:
             log.error(str(e))
             return None
+        
         if oa_meta is None:
             log.debug("No meta")
+            
         titL = safe_dic(oa_meta, "title")
         doi = str_to_doiID(safe_dic(oa_meta, "doi"))
         arxiv = extract_arxivID(oa_meta)
-        metadata = MetadataObj(title=titL, doi=doi, arxiv=arxiv)
-        return metadata
+        publication_date = safe_dic(oa_meta, "publication_date")
+        
+        authorships, authors = safe_dic(oa_meta, "authorships"), []
+        for author in authorships:
+            authors.append(safe_dic(safe_dic(author, "author"), "display_name"))
+            
+        return MetadataObj(title=titL, doi=doi, arxiv=arxiv, publication_date=publication_date, authors=authors)
     except Exception as e:
         log.error(str(e))
 
@@ -134,7 +141,9 @@ def metaDict_to_metaObj(meta_dict):
     title = safe_dic(meta_dict, "title")
     doi = safe_dic(meta_dict, "doi")
     arxiv = safe_dic(meta_dict, "arxiv")
-    return MetadataObj(title=title, doi=doi, arxiv=arxiv)
+    publication_date = safe_dic(meta_dict, "publication_date")
+    authors = safe_dic(meta_dict, "authors")
+    return MetadataObj(title=title, doi=doi, arxiv=arxiv, publication_date=publication_date, authors=authors)
 
 
 def safe_dic(dic, key):

@@ -7,15 +7,19 @@ from ..utils.regex import (
 
 class DownloadedObj:
 
-    def __init__(self, title, doi, arxiv, file_name, file_path):
+    def __init__(self, title, doi, arxiv, publication_date, authors, file_name, file_path):
         self._title = title
         self._doi = str_to_doiID(doi)
         self._arxiv = str_to_arxivID(arxiv)
+        self._publication_date = publication_date
+        self._authors = authors
         self._file_name = file_name
         self._file_path = file_path
 
     def __str__(self):
-        return f"Title: {self._title}\nDOI: {self._doi}\nArXiv: {self._arxiv}\nFile Name: {self._file_name}\nFile Path: {self._file_path}"
+        return f"Title: {self._title}\nDOI: {self._doi}\nArXiv: {self._arxiv}\n\
+                    Publication Date: {self._publication_date}\nAuthors: {self._authors}\n\
+                        File Name: {self._file_name}\nFile Path: {self._file_path}"
 
     @property
     def title(self):
@@ -56,12 +60,30 @@ class DownloadedObj:
     @file_path.setter
     def file_path(self, value):
         self._file_path = value
+        
+    @property
+    def publication_date(self):
+        return self._publication_date
+    
+    @publication_date.setter
+    def publication_date(self, value):
+        self._publication_date = value
+        
+    @property
+    def authors(self):
+        return self._authors
+    
+    @authors.setter
+    def authors(self, value):
+        self._authors = value
 
     def to_dict(self):
         return {
             'title': self._title,
             'doi': self._doi,
             'arxiv': self.arxiv,
+            'publication_date': self._publication_date,
+            'authors': ", ".join(self._authors) if self._authors else "",
             'file_name': self._file_name,
             'file_path': self._file_path
         }

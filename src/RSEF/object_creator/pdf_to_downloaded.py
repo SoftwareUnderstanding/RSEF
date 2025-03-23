@@ -34,7 +34,13 @@ def pdfDoi_to_downloaded(doi,file_path):
         doi = str_to_doiID(safe_dic(oa_meta, "doi"))
         arxiv = extract_arxivID(oa_meta)
         file_name = os.path.basename(file_path)
-        return DownloadedObj(titL,doi,arxiv,file_name,file_path)
+        publication_date = safe_dic(oa_meta, "publication_date")
+        
+        authorships, authors = safe_dic(oa_meta, "authorships"), []
+        for author in authorships:
+            authors.append(safe_dic(safe_dic(author, "author"), "display_name"))
+            
+        return DownloadedObj(titL, doi, arxiv, publication_date, authors, file_name, file_path)
     except Exception as e:
         print(str(e))
 
