@@ -40,6 +40,9 @@ def doi_to_metadataObj(doi):
         
         if oa_meta is None:
             log.info("No meta")
+            return MetadataObj(
+                title=None, doi=doi, arxiv=None, publication_date=None, authors=None
+            )
         titL = safe_dic(oa_meta, "title")
         doi = str_to_doiID(safe_dic(oa_meta, "doi"))
         arxiv = extract_arxivID(oa_meta)

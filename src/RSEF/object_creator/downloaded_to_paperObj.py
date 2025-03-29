@@ -10,15 +10,34 @@ from ..object_creator.implementation_url import ImplementationUrl
 
 log = logging.getLogger(__name__)
 
-def downloaded_to_paperObj(downloadedObj):
+def downloaded_to_paperObj(downloadedObj, paper_meta = None):
     """
     :param: downloadedObj
     ---
     :returns:
     Paper Obj (will have processed the paper within the downloaded Obj to look for github urls)
     """
-    if not downloadedObj:
-        return None
+    if not downloadedObj and not paper_meta:
+        return
+    elif not downloadedObj and paper_meta:
+        title = paper_meta.title if paper_meta else None
+        doi = paper_meta.doi if paper_meta else None
+        arxiv = paper_meta.arxiv if paper_meta else None
+        publication_date = paper_meta.publication_date if paper_meta else None
+        authors = paper_meta.authors if paper_meta else None
+
+        return PaperObj(
+            title=title, 
+            doi=doi, 
+            arxiv=arxiv, 
+            publication_date=publication_date, 
+            authors=authors,
+            file_name=None,
+            file_path=None,
+            implementation_urls=[],
+            abstract=None
+        )
+    
     try:
         # TODO optimise
         raw_pdf_data = raw_read_pdf(pdf_path=downloadedObj.file_path)
@@ -39,6 +58,7 @@ def downloaded_to_paperObj(downloadedObj):
         authors = downloadedObj.authors
         file_name = downloadedObj.file_name
         file_path = downloadedObj.file_path
+        pdf_link = downloadedObj.pdf_link
         return PaperObj(
             title=title, 
             implementation_urls=urls, 
@@ -48,7 +68,8 @@ def downloaded_to_paperObj(downloadedObj):
             publication_date=publication_date, 
             authors=authors, 
             file_name=file_name, 
-            file_path=file_path
+            file_path=file_path, 
+            pdf_link=pdf_link
         )
     except Exception as e:
         log.error("Error while trying to read from the pdf: ", str(e))

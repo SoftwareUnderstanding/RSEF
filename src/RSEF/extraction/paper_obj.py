@@ -3,7 +3,7 @@ from ..utils.regex import str_to_doiID, str_to_arxivID
 
 
 class PaperObj:
-    def __init__(self, title, implementation_urls, doi, arxiv, abstract, publication_date, authors, file_name, file_path):
+    def __init__(self, title, implementation_urls, doi, arxiv, abstract, publication_date, authors, file_name, file_path, pdf_link=None):
         self._title: str = title
         self._implementation_urls: list[ImplementationUrl] = [
             ImplementationUrl.from_dict(url) for url in implementation_urls]
@@ -14,11 +14,12 @@ class PaperObj:
         self.authors = authors
         self._file_name: str = file_name
         self._file_path: str = file_path
+        self.pdf_link = pdf_link
 
     def __str__(self):
         return f"Title: {self._title}\nImplementation URLs: {self._implementation_urls}\nDOI: {self._doi}\n\
                 ArXiv: {self._arxiv}\nAbstract: {self._abstract}\nPublication Date: {self.publication_date}\n\
-                Authors: {self.authors}\nFile Name: {self._file_name}\nFile Path: {self._file_path}"
+                Authors: {self.authors}\nFile Name: {self._file_name}\nFile Path: {self._file_path}\nPdf Link: {self.pdf_link}"
 
     def __repr__(self):
         return self.__str__()
@@ -168,6 +169,14 @@ class PaperObj:
     @authors.setter
     def authors(self, value):
         self._authors = value
+        
+    @property
+    def pdf_link(self):
+        return self._pdf_link
+    
+    @pdf_link.setter
+    def pdf_link(self, value):
+        self._pdf_link = value
 
     def to_dict(self):
         return {
@@ -179,5 +188,6 @@ class PaperObj:
             'publication_date': self.publication_date,
             'authors': ", ".join(self.authors) if self.authors else "",
             'file_name': self._file_name,
-            'file_path': self._file_path
+            'file_path': self._file_path,
+            'pdf_link': self.pdf_link
         }
