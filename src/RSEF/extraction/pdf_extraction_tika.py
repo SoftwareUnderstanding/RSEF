@@ -6,7 +6,7 @@ from tika import parser
 # Import REGEXes
 from ..utils.regex import ZENODO_DOI_REGEX, ZENODO_RECORD_REGEX, GITHUB_REGEX, GITLAB_REGEX
 
-logger = logging.getLogger("extraction")
+log = logging.getLogger(__name__)
 
 
 # ======================================================================================================================
@@ -22,20 +22,20 @@ def raw_read_pdf(pdf_path) -> str:
         parsed = parser.from_file(path)
         content = parsed.get('content', None)
         if not content:
-            logging.debug("Issue when retrieving pdf content TIKA")
+            log.debug("Issue when retrieving pdf content TIKA")
         return content
     except FileNotFoundError:
-        logging.error(f"PDF file not found at path: {pdf_path}")
+        log.error(f"PDF file not found at path: {pdf_path}")
         return ""
     except Exception as e:
-        logging.error(f"An error occurred while reading the PDF: {str(e)}")
+        log.error(f"An error occurred while reading the PDF: {str(e)}")
         return ""
 
 
 def raw_to_list(raw_pdf_data: str) -> list:
 
     if not raw_pdf_data:
-        logging.debug(f"converting from raw pdf to list pdf, {raw_pdf_data}")
+        log.debug(f"converting from raw pdf to list pdf, {raw_pdf_data}")
         return []
 
     list_pdf_data = raw_pdf_data.split('\n')
@@ -52,10 +52,10 @@ def read_pdf_list(pdf_path, splitter='\n') -> list:
         return list_pdf_data
 
     except FileNotFoundError:
-        logging.error(f"PDF file not found at path: {pdf_path}")
+        log.error(f"PDF file not found at path: {pdf_path}")
         return []
     except Exception as e:
-        logging.error(f"An error occurred while reading the PDF: {str(e)}")
+        log.error(f"An error occurred while reading the PDF: {str(e)}")
         return []
 # ======================================================================================================================
 # TITLE EXTRACTION
@@ -112,7 +112,7 @@ def find_abstract_index(pdf_data: list) -> int:
                     return index
             index += 1
     except Exception as e:
-        logging.warning(f"Failed to Extract the abstract {str(e)}")
+        log.warning(f"Failed to Extract the abstract {str(e)}")
         return -1
     return index
 
@@ -123,7 +123,7 @@ def get_possible_abstract(pdf_data: list) -> str:
         if index > 0:
             return ''.join(pdf_data[index:index+50])
     except Exception as e:
-        logging.error(f"get_possible_abstract: Issue while trying to extract the abstract: {e}")
+        log.error(f"get_possible_abstract: Issue while trying to extract the abstract: {e}")
 
 
 def find_github_in_abstract(pdf_data: list) -> list:
@@ -246,10 +246,10 @@ def extract_urls(raw_pdf_data: str, list_pdf_data: list) -> dict:
     #list_pdf_data = raw_to_list(raw_pdf_data)
     urls = {}
     if not raw_pdf_data:
-        logging.debug("Extract Urls: raw_pdf_data is None or Empty")
+        log.debug("Extract Urls: raw_pdf_data is None or Empty")
         return urls
     if not list_pdf_data:
-        logging.debug("Extract Urls: list_pdf_data is None or Empty")
+        log.debug("Extract Urls: list_pdf_data is None or Empty")
         return urls
 
     list_git_urls = ranked_git_url(list_pdf_data)

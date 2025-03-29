@@ -8,14 +8,20 @@ from .object_creator.create_downloadedObj import pdf_to_downloaded_obj, json_to_
 from .object_creator.downloaded_to_paperObj import dwnldd_obj_to_paper_dic
 from .output_analysis.analysis import output_analysis
 from . import __version__
+import datetime
+import logging
 import click
 import os
-import logging
+
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 VALID_EXTENSIONS = ['.txt', '.json']
 
 # Set up logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    filename=f"output/logs/rsef_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.log", 
+    level=logging.INFO, 
+    format='%(asctime)s:%(levelname)s:%(message)s'
+)
 log = logging.getLogger(__name__)
 
 
