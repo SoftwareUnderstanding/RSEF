@@ -4,6 +4,8 @@ import requests
 import logging
 from ..utils.regex import str_to_arxivID
 
+log = logging.getLogger(__name__)
+
 # Deprecated but keep around to view old usage
 # def filter_arxiv(file_path):
 #     # Read the csv file
@@ -35,14 +37,14 @@ def download_pdf(url, output_dir):
     try:
         r = requests.get(url)
         if r.status_code != 200:
-            logging.debug("Failed to download PDF from URL: %s (Status Code: %s)", url, r.status_code)
+            log.debug("Failed to download PDF from URL: %s (Status Code: %s)", url, r.status_code)
             return None
         output_path = os.path.join(output_dir, url.split('/')[-1])
         with open(output_path, 'wb') as f:
             f.write(r.content)
         return output_path
     except Exception as e:
-        logging.error("Issue when trying to download Arxiv PDF %s", str(e))
+        log.error("Issue when trying to download Arxiv PDF %s", str(e))
         return None
 
 

@@ -8,6 +8,7 @@ from ..extraction.paper_obj import PaperObj
 from ..object_creator.create_downloadedObj import downloadedDic_to_downloadedObj, save_dict_to_json
 from ..object_creator.implementation_url import ImplementationUrl
 
+log = logging.getLogger(__name__)
 
 def downloaded_to_paperObj(downloadedObj):
     """
@@ -50,8 +51,7 @@ def downloaded_to_paperObj(downloadedObj):
             file_path=file_path
         )
     except Exception as e:
-        print(str(e))
-        print("Error while trying to read from the pdf")
+        log.error("Error while trying to read from the pdf: ", str(e))
 
 
 def dwnldd_obj_to_paper_dic(downloaded_obj):
@@ -132,17 +132,17 @@ def paperObj_ppDict(paper):
     try:
         if paper is not None:
             if paper.doi is None:
-                logging.warning(f"This paper does not have a doi, created a fake ID for {paper.title}")
+                log.warning(f"This paper does not have a doi, created a fake ID for {paper.title}")
                 paper.doi = BACKUP_ID
                 ans = {str(BACKUP_ID): paper.to_dict()}
                 BACKUP_ID += 1
                 return ans
             return {paper.doi: paper.to_dict()}
         else:
-            logging.debug("paper is None; cannot process.")
+            log.info("paper is None; cannot process.")
             return None
     except Exception as e:
-        logging.error("An error occurred while processing paper with DOI %s: %s", paper.doi, str(e))
+        log.error("An error occurred while processing paper with DOI %s: %s", paper.doi, str(e))
 
 def safe_dic(dic, key):
     try:

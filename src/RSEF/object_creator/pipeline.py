@@ -10,7 +10,6 @@ import logging
 import json
 import os
 
-logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
@@ -166,7 +165,7 @@ def multi_doi_pipeline(list_dois, output_dir, bidir=True, unidir=True):
             log.error(str(e))
         finally:
             log.info(f"Finished analyzing DOI: {doi}")
-            print("-------------------------------\n")
+            log.info("-------------------------------\n")
 
     return dict_to_json({'RSEF Output': result}, output_path=os.path.join(output_dir, "url_search_output.json"))
 

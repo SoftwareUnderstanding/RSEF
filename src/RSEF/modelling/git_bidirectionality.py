@@ -7,13 +7,14 @@ from ..extraction.somef_extraction.somef_extractor import (
     get_related_paper
 )
 
+log = logging.getLogger(__name__)
 
 def load_json(path):
     try:
         with open(path, 'r') as f:
             return json.load(f)
     except:
-        logging.error("Error while trying to open the repository JSON")
+        log.error("Error while trying to open the repository JSON")
         return None
 
 
@@ -28,7 +29,7 @@ def is_it_bidir(paper_obj, repo_json):
 
     """
     if not (repo_data := load_json(repo_json)):
-        logging.debug("is_it_bidir: Error while trying to open repository JSON")
+        log.debug("is_it_bidir: Error while trying to open repository JSON")
         return None
     bidir_locations = []
     if doi := paper_obj.doi:

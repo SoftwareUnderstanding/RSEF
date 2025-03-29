@@ -6,6 +6,7 @@ import os
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
 
+log = logging.getLogger(__name__)
 
 def doi_to_downloaded_pdf(url, doi, output_dir):
     '''
@@ -33,17 +34,17 @@ def doi_to_downloaded_pdf(url, doi, output_dir):
         pdf = try_other_locations(upaywll)
     # Check if no pdf has been found
     if not pdf:
-        logging.error(f"Failed to download the pdf for {str(doi)} with {str(url)}")
+        log.debug(f"Failed to download the PDF for {str(doi)} with {str(url)}")
         return None
     # if success
     try:
         pdf_filepath = os.path.join(output_dir, file_name)
         with open(pdf_filepath, 'wb') as f:  # here download the pdf
             f.write(pdf)
-            logging.debug('written pdf successfully')
+            log.info('PDF written successfully from Unpaywall')
         return pdf_filepath
     except Exception as e:
-        logging.error(f"Exception! Failed to download the pdf for {str(doi)} with {str(url)}, {str(e)}")
+        log.error(f"Exception! Failed to save the PDF for {str(doi)} with {str(url)}, {str(e)}")
         return None
 
 
@@ -65,7 +66,7 @@ def try_other_locations(jayson: json):
         return None
     except Exception as e:
         error_msg = f"Backup Error: An error occurred - {str(e)}"
-        logging.error(error_msg)
+        log.error(error_msg)
         return None
 
 
@@ -190,8 +191,7 @@ def _unpaywall_response_to_json(url: str):
         json_idk = json.loads(idk)
         return json_idk
     except Exception as e:
-        logging.error(f"Issue while trying to get the unpaywall response {str(e)}")
-        logging.error(f"Failed to download the pdf\n")
+        log.error(f"Failed to download the PDF: Issue while trying to get the unpaywall response {str(e)}")
         return None
 
 
@@ -214,7 +214,7 @@ def detect_content_type(response):
         print(f"An error occurred: {e}")
         return "Error"
     except Exception as e:
-        logging.error(f"Unknown Issue when determining the content type {str(e)}")
+        log.error(f"Unknown Issue when determining the content type {str(e)}")
         return "Error"
 
 
@@ -222,5 +222,5 @@ def safe_dic(dic, key):
     try:
         return dic[key]
     except Exception as e:
-        logging.error(f"Issue when opening the Dictionary {str(e)}")
+        log.error(f"Issue when opening the Dictionary {str(e)}")
         return None
