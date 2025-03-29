@@ -17,7 +17,7 @@ def str_to_doiID(string):
     try:
         match = re.search(DOI_REGEX, string)
         if match:
-            doi = match.group(1)
+            doi = match.group(1).replace('.pdf', '')
             return doi
         return None
     except:

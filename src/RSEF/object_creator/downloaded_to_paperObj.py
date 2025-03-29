@@ -8,16 +8,36 @@ from ..extraction.paper_obj import PaperObj
 from ..object_creator.create_downloadedObj import downloadedDic_to_downloadedObj, save_dict_to_json
 from ..object_creator.implementation_url import ImplementationUrl
 
+log = logging.getLogger(__name__)
 
-def downloaded_to_paperObj(downloadedObj):
+def downloaded_to_paperObj(downloadedObj, paper_meta = None):
     """
     :param: downloadedObj
     ---
     :returns:
     Paper Obj (will have processed the paper within the downloaded Obj to look for github urls)
     """
-    if not downloadedObj:
-        return None
+    if not downloadedObj and not paper_meta:
+        return
+    elif not downloadedObj and paper_meta:
+        title = paper_meta.title if paper_meta else None
+        doi = paper_meta.doi if paper_meta else None
+        arxiv = paper_meta.arxiv if paper_meta else None
+        publication_date = paper_meta.publication_date if paper_meta else None
+        authors = paper_meta.authors if paper_meta else None
+
+        return PaperObj(
+            title=title, 
+            doi=doi, 
+            arxiv=arxiv, 
+            publication_date=publication_date, 
+            authors=authors,
+            file_name=None,
+            file_path=None,
+            implementation_urls=[],
+            abstract=None
+        )
+    
     try:
         # TODO optimise
         raw_pdf_data = raw_read_pdf(pdf_path=downloadedObj.file_path)
@@ -38,6 +58,7 @@ def downloaded_to_paperObj(downloadedObj):
         authors = downloadedObj.authors
         file_name = downloadedObj.file_name
         file_path = downloadedObj.file_path
+        pdf_link = downloadedObj.pdf_link
         return PaperObj(
             title=title, 
             implementation_urls=urls, 
@@ -47,11 +68,11 @@ def downloaded_to_paperObj(downloadedObj):
             publication_date=publication_date, 
             authors=authors, 
             file_name=file_name, 
-            file_path=file_path
+            file_path=file_path, 
+            pdf_link=pdf_link
         )
     except Exception as e:
-        print(str(e))
-        print("Error while trying to read from the pdf")
+        log.error("Error while trying to read from the pdf: ", str(e))
 
 
 def dwnldd_obj_to_paper_dic(downloaded_obj):
@@ -132,17 +153,17 @@ def paperObj_ppDict(paper):
     try:
         if paper is not None:
             if paper.doi is None:
-                logging.warning(f"This paper does not have a doi, created a fake ID for {paper.title}")
+                log.warning(f"This paper does not have a doi, created a fake ID for {paper.title}")
                 paper.doi = BACKUP_ID
                 ans = {str(BACKUP_ID): paper.to_dict()}
                 BACKUP_ID += 1
                 return ans
             return {paper.doi: paper.to_dict()}
         else:
-            logging.debug("paper is None; cannot process.")
+            log.info("paper is None; cannot process.")
             return None
     except Exception as e:
-        logging.error("An error occurred while processing paper with DOI %s: %s", paper.doi, str(e))
+        log.error("An error occurred while processing paper with DOI %s: %s", paper.doi, str(e))
 
 def safe_dic(dic, key):
     try:

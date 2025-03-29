@@ -6,7 +6,6 @@ from ..modelling.zenodo_bidirectionality import is_it_bidir as zenodo_is_it_bidi
 from ..modelling.unidirectionality import is_repo_unidir
 import logging
 
-logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
@@ -28,21 +27,21 @@ def _get_identifier(paper):
     identifier
     """
     if not paper:
-        log.error("Paper Object is None")
+        log.info("Paper Object is None")
         return None
     if paper.doi and paper.doi != "0":
         return paper.doi
     elif paper.arxiv:
         return paper.arxiv
     else:
-        log.error("Paper Object Has no identifier to use")
+        log.debug("Paper Object Has no identifier to use")
         return None
 
 
 def check_paper_directionality(paper, directionality, output_dir):
     result = {}
     if not (iden := _get_identifier(paper)):
-        log.error(
+        log.info(
             "check_paper_directionality: No identifier found for this paper")
         return None
     try:
@@ -108,7 +107,7 @@ def _git_check_directionality(paper, git_urls, directionality, iden, first_time,
         # Download repository from SOMEF
         repo_file = download_repo_metadata(url, output_dir)
         if not repo_file:
-            log.error(f"Issue while downloading the repository for {iden}")
+            log.info(f"Issue while downloading the repository for {iden}")
             continue
         # assessment of bidirectionality
         if directionality:

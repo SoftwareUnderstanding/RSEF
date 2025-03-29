@@ -1,9 +1,12 @@
-import json
 from collections import defaultdict
+import logging
+import json
+
+log = logging.getLogger(__name__)
 
 def output_analysis(rsef_output_path: str, output_summary_path: str):
     """Analyze the output of RSEF and save summary statistics to a JSON file."""
-    print("Starting RSEF Output Analysis...")
+    log.info("Starting RSEF Output Analysis...")
     
     # Load the JSON file
     try:
@@ -11,7 +14,7 @@ def output_analysis(rsef_output_path: str, output_summary_path: str):
             data = json.load(file)
             rsef_output = data.get('RSEF Output', [])
     except (FileNotFoundError, json.JSONDecodeError) as e:
-        print(f"Error reading file: {e}")
+        log.info(f"Error reading file: {e}")
         return
     
     # Ensure uniqueness of RSEF output
@@ -75,6 +78,6 @@ def output_analysis(rsef_output_path: str, output_summary_path: str):
     try:
         with open(output_summary_path, 'w', encoding="UTF-8") as outfile:
             json.dump(summary, outfile, indent=4)
-        print(f"Summary statistics saved to {output_summary_path}")
+        log.info(f"Summary statistics saved to {output_summary_path}")
     except IOError as e:
-        print(f"Error saving summary: {e}")
+        log.error(f"Error saving summary: {e}")

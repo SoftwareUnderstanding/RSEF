@@ -8,7 +8,6 @@ from ..utils.regex import (
 )
 import logging
 
-logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
@@ -40,8 +39,10 @@ def doi_to_metadataObj(doi):
             return None
         
         if oa_meta is None:
-            log.debug("No meta")
-            
+            log.info("No meta")
+            return MetadataObj(
+                title=None, doi=doi, arxiv=None, publication_date=None, authors=None
+            )
         titL = safe_dic(oa_meta, "title")
         doi = str_to_doiID(safe_dic(oa_meta, "doi"))
         arxiv = extract_arxivID(oa_meta)

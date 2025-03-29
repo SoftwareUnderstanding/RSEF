@@ -10,7 +10,6 @@ import logging
 import json
 import os
 
-logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
@@ -22,8 +21,9 @@ def doi_to_paper(doi, output_dir):
     paperObj
     """
     meta = doi_to_metadataObj(doi)
-    downldd = meta_to_dwnldd(meta, output_dir)
-    paper = downloaded_to_paperObj(downldd)
+    pdf_link = doi if 'pdf' in doi else None
+    downldd = meta_to_dwnldd(meta, output_dir, pdf_link)
+    paper = downloaded_to_paperObj(downldd, meta)
     return paper
 
 
@@ -166,7 +166,7 @@ def multi_doi_pipeline(list_dois, output_dir, bidir=True, unidir=True):
             log.error(str(e))
         finally:
             log.info(f"Finished analyzing DOI: {doi}")
-            print("-------------------------------\n")
+            log.info("-------------------------------\n")
 
     return dict_to_json({'RSEF Output': result}, output_path=os.path.join(output_dir, "url_search_output.json"))
 
