@@ -21,8 +21,9 @@ def doi_to_paper(doi, output_dir):
     paperObj
     """
     meta = doi_to_metadataObj(doi)
-    downldd = meta_to_dwnldd(meta, output_dir)
-    paper = downloaded_to_paperObj(downldd)
+    pdf_link = doi if 'pdf' in doi else None
+    downldd = meta_to_dwnldd(meta, output_dir, pdf_link)
+    paper = downloaded_to_paperObj(downldd, meta)
     return paper
 
 

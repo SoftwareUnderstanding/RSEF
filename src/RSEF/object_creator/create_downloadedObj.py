@@ -14,7 +14,7 @@ from ..utils.regex import str_to_doiID, DOI_REGEX
 
 log = logging.getLogger(__name__)
 
-def meta_to_dwnldd(metadataObj, output_dir):
+def meta_to_dwnldd(metadataObj, output_dir, pdf_link=None):
     """
     :param metdataObj: metadata object will be used to download the pdf
     :param output_dir: String output directory to where the pdf will be downloaded
@@ -23,21 +23,25 @@ def meta_to_dwnldd(metadataObj, output_dir):
     downloaded Object, which has a filename and filepath
     """
     # takes metadata and downloads the pdf
-    if not metadataObj:
+    if not metadataObj and not pdf_link:
         return None
+    
     try:
-        file_path = pdf_download_pipeline(id=metadataObj.doi, output_directory=output_dir)
+        doi = metadataObj.doi if metadataObj else None
+        file_path = pdf_download_pipeline(id=doi, output_directory=output_dir, pdf_link=pdf_link)
         if not file_path:
             return None
         file_name = os.path.basename(file_path)
+
         return DownloadedObj(
-                title=metadataObj.title,
-                doi=metadataObj.doi,
-                arxiv=metadataObj.arxiv,
-                publication_date=metadataObj.publication_date,
-                authors=metadataObj.authors,
+                title=metadataObj.title if metadataObj else None,
+                doi=metadataObj.doi if metadataObj else None,
+                arxiv=metadataObj.arxiv if metadataObj else None,
+                publication_date=metadataObj.publication_date if metadataObj else None,
+                authors=metadataObj.authors if metadataObj else None,
                 file_name=file_name,
-                file_path=file_path
+                file_path=file_path,
+                pdf_link=pdf_link
             )
     except Exception as e:
         try:

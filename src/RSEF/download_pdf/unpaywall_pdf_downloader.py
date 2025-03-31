@@ -1,45 +1,70 @@
+from datetime import datetime
 import json
 import logging
-import pandas
 import requests
 import os
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urljoin
 
 log = logging.getLogger(__name__)
 
-def doi_to_downloaded_pdf(url, doi, output_dir):
+def download_pdf_link(pdf_link, pdf_filepath):
+    """Attempts to download a PDF from a direct link."""
+    try:
+        response = requests.get(pdf_link, timeout=10, stream=True)
+        response.raise_for_status()
+
+        with open(pdf_filepath, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192): 
+                f.write(chunk)
+
+        log.info('PDF downloaded successfully from direct link')
+        return pdf_filepath
+
+    except requests.exceptions.RequestException as e:
+        log.error(f"Error downloading PDF from direct link: {pdf_link}, {e}")
+        return None
+
+def doi_to_downloaded_pdf(url, doi, pdf_link, output_dir):
     '''
     @Param url: unpaywall url, we will get a json where we can find where to freely access the paper
     @Param doi: DOI for the paper
-    @Param output_dir: output directory to where the pdf will be saved
+    @Param pdf_link: Direct PDF link (if available)
+    @Param output_dir: output directory where the PDF will be saved
     '''
     # Input verification
     if not os.path.exists(output_dir):
         return None
-    if not (file_name := _doi_to_pdf_name(doi)):
+    if not (file_name := _doi_to_pdf_name(doi)) and not pdf_link:
         return None
-    # Get the unpaywall json
-    if not (upaywll := _unpaywall_response_to_json(url)):
+
+    pdf_filepath = os.path.join(output_dir, file_name or f"{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
+    if pdf_link: # If a direct PDF link is available, try downloading it first
+        if downloaded_pdf := download_pdf_link(pdf_link, pdf_filepath):
+            return downloaded_pdf
+    
+    # Get the Unpaywall JSON response
+    if not (upaywall := _unpaywall_response_to_json(url)):
+        log.debug(f"Failed to download the PDF for {str(doi)} with {str(url)}")
         return None
+    
     # See if there is a best location
-    if bst_oa_loc := safe_dic(upaywll, "best_oa_location"):
+    if bst_oa_loc := safe_dic(upaywall, "best_oa_location"):
         response = _try_all_location_urls(bst_oa_loc)
         pdf = response_to_pdf_binary(response)
-        # if best location has failed
         if not pdf:
-            pdf = try_other_locations(upaywll)
-    # There is no best location
+            pdf = try_other_locations(upaywall)
     else:
-        pdf = try_other_locations(upaywll)
-    # Check if no pdf has been found
+        pdf = try_other_locations(upaywall)
+    
+    # Check if no PDF has been found
     if not pdf:
         log.debug(f"Failed to download the PDF for {str(doi)} with {str(url)}")
         return None
-    # if success
+    
+    # Save the downloaded PDF
     try:
-        pdf_filepath = os.path.join(output_dir, file_name)
-        with open(pdf_filepath, 'wb') as f:  # here download the pdf
+        with open(pdf_filepath, 'wb') as f:
             f.write(pdf)
             log.info('PDF written successfully from Unpaywall')
         return pdf_filepath
