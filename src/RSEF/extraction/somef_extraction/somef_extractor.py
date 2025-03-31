@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import re
@@ -6,6 +5,7 @@ import subprocess
 
 from ...utils.regex import str_to_doi_list, str_to_arxiv_list, str_to_arxivID
 
+log = logging.getLogger(__name__)
 
 # DOWNLOAD
 def is_github_repo_url(url):
@@ -62,10 +62,10 @@ def download_repo_metadata(url, output_folder_path):
     None if failure/invalid input
     """
     if not is_valid_repo_url(url):
-        logging.debug("download_repo_metadata: URL given is not a valid github/gitlab url")
+        log.info("download_repo_metadata: URL given is not a valid github/gitlab url")
         return None
     if not output_folder_path:
-        logging.debug("download_repo_metadata: No output path")
+        log.info("download_repo_metadata: No output path")
         return None
     pattern = r'(?:http|https)://(?:gitlab\.com|github\.com)/'
     replacement = ''
@@ -80,7 +80,7 @@ def download_repo_metadata(url, output_folder_path):
 
     output_file_path = os.path.join(output_folder_path, file)
     if os.path.exists(output_file_path):
-        logging.debug('Already created a file: ' + output_file_path)
+        log.info('Already created a file: ' + output_file_path)
         return output_file_path
     else:
         try:
@@ -91,10 +91,10 @@ def download_repo_metadata(url, output_folder_path):
                 raise Exception(
                     f"SOMEF Command failed with return code {completed_process.returncode}: {completed_process.stderr}")
         except subprocess.TimeoutExpired:
-            logging.error(f"ERROR: {url} SOMEF command timed out after 5 minutes")
+            log.error(f"ERROR: {url} SOMEF command timed out after 5 minutes")
             return None
         except Exception as e:
-            logging.error(f"ERROR:{url} SOMEF failed due to: {str(e)}")
+            log.error(f"ERROR:{url} SOMEF failed due to: {str(e)}")
             return None
     return output_file_path
 
@@ -179,7 +179,7 @@ def find_doi_citation(somef_data: dict):
                     citation_dois["BIBTEX"].append((doi, source))
             else:
                 print("doi_citation: Unexpected Format, maybe a somef update?")
-                logging.warning(f"Unexpected, format, has there been a somef update? {format}")
+                log.warning(f"Unexpected, format, has there been a somef update? {format}")
                 continue
         else:
             if safe_dic(result, "type") == 'Text_excerpt':
@@ -224,7 +224,7 @@ def find_arxiv_citation(somef_data: dict):
                     citation_arxivs["BIBTEX"].append((arxiv, source))
             else:
                 print("arxiv_citation: Unexpected Format, maybe a somef update?")
-                logging.warning(f"Unexpected, format, has there been a somef update? {format}")
+                log.warning(f"Unexpected, format, has there been a somef update? {format}")
                 continue
         else:
             if safe_dic(result, "type") == 'Text_excerpt':

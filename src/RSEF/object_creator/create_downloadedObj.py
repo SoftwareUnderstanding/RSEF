@@ -12,6 +12,7 @@ from ..object_creator.create_metadata_obj import extract_arxivID
 from ..repofrompaper.utils.constants import DOWNLOADED_PATH
 from ..utils.regex import str_to_doiID, DOI_REGEX
 
+log = logging.getLogger(__name__)
 
 def meta_to_dwnldd(metadataObj, output_dir):
     """
@@ -40,10 +41,10 @@ def meta_to_dwnldd(metadataObj, output_dir):
             )
     except Exception as e:
         try:
-            meta_doi = str(metadataObj.doi)
-            logging.error("Error while creating the downloaded object with this doi: %s for due to %s", meta_doi, str(e))
-        except:
-            logging.error("Error due to metadataObj")
+            meta_doi = str(metadataObj.doi) if metadataObj else None
+            log.error("Error while creating the downloaded object with this doi: %s for due to %s", meta_doi, str(e))
+        except Exception as e:
+            log.error("Error while creating the downloaded object with this metadataObj: %s for due to %s", str(metadataObj), str(e))
         return None
 
 
@@ -103,7 +104,7 @@ def metaJson_to_downloaded_dic(meta_json, output_dir):
         with open(meta_json, 'r') as f:
             metas_dict = json.load(f)
     except Exception as e:
-        logging.error(str(e) + "Error while opening metadata json")
+        log.error(str(e) + "Error while opening metadata json")
     for doi in metas_dict:
         meta_dict = safe_dic(metas_dict,doi)
         dwnObj = metaDict_to_downloaded(meta_dict=meta_dict, output_dir= output_dir)
@@ -148,7 +149,7 @@ def _doi_to_downloaded_obj_backup(id,output_dir):
                                  publication_date=None, authors=None,
                                 file_name=os.path.basename(file_path), file_path=file_path)
     except Exception as e:
-        logging.error(f"An error occurred in _doi_to_downloaded_obj_backup: {str(e)}")
+        log.error(f"An error occurred in _doi_to_downloaded_obj_backup: {str(e)}")
         return None
 
 def doi_to_downloadedDic(doi,output_dir):
@@ -172,7 +173,7 @@ def dois_txt_to_downloadedDics(dois_txt,output_dir):
         with open(dois_txt, 'r') as file:
             dois = file.read().splitlines()
     except:
-        logging.error("Error while opening the txt")
+        log.error("Error while opening the txt")
     return dois_to_downloadedDics(dois,output_dir)
 
 
@@ -222,7 +223,7 @@ def json_to_downloaded_obj(json_data, output_dir):
     path to JSON of downloaded papers
     """
     if not os.path.exists(json_data):
-        logging.debug(f"Error: JSON file '{json_data}' does not exist.")
+        log.debug(f"JSON file '{json_data}' does not exist.")
         return None
     try:
         # Clear the content of the file downloaded_metadata.json
@@ -234,7 +235,7 @@ def json_to_downloaded_obj(json_data, output_dir):
         with open(json_data, 'r', encoding='utf-8') as file:
             json_data = file.read()
             if not json_data:
-                logging.debug(f"Error: JSON file is empty.")
+                log.debug(f"Error: JSON file is empty.")
                 return None
             json_data_list = json.loads(json_data)
             output_path = output_dir + DOWNLOADED_PATH
@@ -243,7 +244,7 @@ def json_to_downloaded_obj(json_data, output_dir):
 
             return output_path
     except Exception as e:
-        logging.error(f"Error decoding JSON data': {e}")
+        log.error(f"Error decoding JSON data': {e}")
         return None
 
 def download_from_doi(doi,output_dir):
@@ -262,7 +263,7 @@ def download_from_pdf_url(url, output_dir):
     :returns
     path to the folder where the pdf is downloaded
     """
-    logging.debug(f"Download using PDF's URL: {url}")
+    log.info(f"Download using PDF's URL: {url}")
     filename = os.path.basename(url)
     if not filename.endswith(".pdf"):
         filename += ".pdf"
@@ -270,14 +271,14 @@ def download_from_pdf_url(url, output_dir):
     output_path = re.sub(r'[<>:"|?*=]', '', output_path)
 
     if os.path.exists(output_path):
-        logging.debug(f"File {filename} already exists in {output_dir}. Skipping download.")
+        log.info(f"File {filename} already exists in {output_dir}. Skipping download.")
         return output_path
 
     try:
         response = requests.get(url, allow_redirects=True)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error downloading PDF from {url}: {e}")
+        log.error(f"Error downloading PDF from {url}: {e}")
         return None
 
     if response.status_code == 200:
@@ -288,10 +289,10 @@ def download_from_pdf_url(url, output_dir):
                 file.write(response.content)
             return output_path
         else:
-            logging.debug(f"The content at {url} is not a PDF. Content-Type is {content_type}")
+            log.debug(f"The content at {url} is not a PDF. Content-Type is {content_type}")
             return None
     else:
-        logging.debug(f"Error downloading PDF from {url}: Status code {response.status_code}")
+        log.debug(f"Error downloading PDF from {url}: Status code {response.status_code}")
         return None
 
 def download_by_json(json_data_list, output_path):
@@ -319,7 +320,7 @@ def download_by_json(json_data_list, output_path):
                     
         # Download using metadata
         elif doi is not None:
-            logging.debug(f"Downloading using metadata: {doi}")
+            log.info(f"Downloading using metadata: {doi}")
             try:
                 downloadedMeta = doi_to_metadataObj(doi)
                 if downloadedMeta:
@@ -327,9 +328,9 @@ def download_by_json(json_data_list, output_path):
                     if downloadedObj:
                         save_dict_to_json(downloadedObj.to_dict(), output_path)
                 else:
-                    logging.debug("Couldn't find the ID in OpenAlex")
+                    log.debug("Couldn't find the ID in OpenAlex")
             except Exception as e:
-                logging.error("An error occurred while fetching metadata:", e)
+                log.error("An error occurred while fetching metadata: ", e)
 
 def save_dict_to_json(obj, json_path):
     """
@@ -348,15 +349,15 @@ def save_dict_to_json(obj, json_path):
                 json_data = json.load(file)
         json_data.append(obj)
     except Exception as e:
-        logging.error("Error reading JSON data:", e)
+        log.error("Error reading JSON data:", e)
     
     try:
         with open(json_path, 'w', encoding='utf-8', errors='ignore') as file:
             json.dump(json_data, file, indent=4, ensure_ascii=False)
 
-        logging.debug("Data successfully appended to file:", json_path)
+        log.info("Data successfully appended to file:", json_path)
     except Exception as e:
-        logging.error("Error appending JSON data to file:", e)
+        log.error("Error appending JSON data to file:", e)
 
 def remove_empty_fields_from_file(file_path):
     """

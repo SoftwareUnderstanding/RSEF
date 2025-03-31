@@ -1,5 +1,4 @@
 import logging
-import os
 
 import requests
 import json
@@ -9,6 +8,7 @@ from ...utils.regex import str_to_doiID, str_to_arxivID
 
 BASE_URL = 'https://api.openalex.org/works'
 
+log = logging.getLogger(__name__)
 
 def create_arxiv_doi(arxiv):
     # Every arxiv after 2022 has an automatically generated doi like the one below
@@ -30,14 +30,14 @@ def query_openalex_api(doi):
     try:
         response = requests.get(url)
         if response.status_code != 200:
-            logging.debug("HTTP request failed with status code: %s", response.status_code)
+            log.debug("HTTP request failed with status code: %s", response.status_code)
             return None
         data = response.json()
         return data
     except json.JSONDecodeError as e:
-        logging.error("Error decoding JSON response: %s", str(e))
+        log.error("Error decoding JSON response: %s", str(e))
     except Exception as e:
-        logging.error("Other Error has been produced %s", str(e))
+        log.error("Other Error has been produced %s", str(e))
     return None
 
 
