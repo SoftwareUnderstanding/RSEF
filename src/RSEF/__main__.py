@@ -1,5 +1,4 @@
 # TODO find appropiate names
-import json
 from RSEF.repofrompaper.utils.constants import PROCESSED_PATH, ASSES_PATH
 from .object_creator.pipeline import multi_doi_search, paper_objects_search, single_doi_pipeline
 from .object_creator.create_downloadedObj import doi_to_downloadedJson, dois_txt_to_downloadedJson
@@ -11,12 +10,19 @@ from . import __version__
 import datetime
 import logging
 import click
+import json
 import os
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
 VALID_EXTENSIONS = ['.txt', '.json']
 
 # Set up logging
+if not os.path.exists("output"):
+    os.makedirs("output")
+
+if not os.path.exists("output/logs"):
+    os.makedirs("output/logs")
+
 logging.basicConfig(
     filename=f"output/logs/rsef_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.log", 
     level=logging.INFO, 
@@ -89,7 +95,7 @@ def cli():
 def assess(input, output, unidir, bidir):
     # Clear the content of the url_search_output.json
     url_search_output_path = output + ASSES_PATH
-    if os.path.exists(url_search_output_path):        
+    if os.path.exists(url_search_output_path):
         with open(url_search_output_path, 'w') as file:
             file.truncate(0)
 
@@ -99,15 +105,15 @@ def assess(input, output, unidir, bidir):
     elif input.endswith(".json") and os.path.exists(input):
         with open(input, 'r', encoding='utf-8') as file:
             data = json.load(file)
-        
+
         if isinstance(data, list) and 'implementation_urls' in data[0]:
             # processed_metadata.json
             output_path = paper_objects_search(
                 papers_json=input, output_dir=output, unidir=unidir, bidir=bidir)
-            
+
         elif isinstance(data, list) and 'primary_location' in data[0]:
-            # DOI-Extractor-OEG JSON        
-            processed_papers = process(input= None, json=input, output=output)
+            # DOI-Extractor-OEG JSON
+            processed_papers = process(input=None, json=input, output=output)
             processed_papers_path = processed_papers + PROCESSED_PATH
             output_path = paper_objects_search(
                 papers_json=processed_papers_path, output_dir=output, unidir=unidir, bidir=bidir)
@@ -151,10 +157,10 @@ def process(input, json, output):
             file.truncate(0)
 
     if input and json:
-        print("Error: Only one input should be provided.")
+        log.error("Only one input should be provided.")
         return
     if input and os.path.isdir(input):
-        _aux_pdfs_to_pp_json(input= input, output= output)
+        _aux_pdfs_to_pp_json(input=input, output=output)
         return
     if input and input.endswith(".json") and os.path.exists(input):
         output_dir = dwnlddJson_to_paperJson(input, output)
@@ -163,21 +169,23 @@ def process(input, json, output):
         downloaded_metadata = json_to_downloaded_obj(json, output)
         output_dir = dwnlddJson_to_paperJson(downloaded_metadata, output)
         return output_dir
-    #if input and input.endswith(".pdf") and os.path.exists(input):
+    # if input and input.endswith(".pdf") and os.path.exists(input):
     #   TODO
     #   dwnldd = pdf_to_downloaded_obj(pdf= input, output_dir= output)
     #   dwnldd_obj_to_paper_json(download_obj= dwnldd,output_dir= output)
     #   return
     else:
-        print("Error")
+        log.error("Invalid input. Please provide a valid file path.")
         return
-    
+
+
 @cli.command()
 @click.option('--input', '-i', required=True, help="Path to RSEF assess JSON output", metavar='<name>')
 @click.option('--output', '-o', default="output/output_analysis.json", show_default=True, help="Output Directory ", metavar='<path>')
 def analyze(input, output):
     output_analysis(input, output)
-    
+
+
 def _aux_pdfs_to_pp_json(input, output):
     try:
         result = {}
@@ -205,4 +213,3 @@ def _aux_pdfs_to_pp_json(input, output):
     except Exception as e:
         log.error(f"an error occurred: {str(e)}")
         log.error(str(e))
-

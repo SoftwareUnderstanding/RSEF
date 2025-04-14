@@ -8,6 +8,7 @@ from urllib.parse import urljoin
 
 log = logging.getLogger(__name__)
 
+
 def download_pdf_link(pdf_link, pdf_filepath):
     """Attempts to download a PDF from a direct link."""
     try:
@@ -15,7 +16,7 @@ def download_pdf_link(pdf_link, pdf_filepath):
         response.raise_for_status()
 
         with open(pdf_filepath, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192): 
+            for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
 
         log.info('PDF downloaded successfully from direct link')
@@ -24,6 +25,7 @@ def download_pdf_link(pdf_link, pdf_filepath):
     except requests.exceptions.RequestException as e:
         log.error(f"Error downloading PDF from direct link: {pdf_link}, {e}")
         return None
+
 
 def doi_to_downloaded_pdf(url, doi, pdf_link, output_dir):
     '''
@@ -38,16 +40,17 @@ def doi_to_downloaded_pdf(url, doi, pdf_link, output_dir):
     if not (file_name := _doi_to_pdf_name(doi)) and not pdf_link:
         return None
 
-    pdf_filepath = os.path.join(output_dir, file_name or f"{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
-    if pdf_link: # If a direct PDF link is available, try downloading it first
+    pdf_filepath = os.path.join(
+        output_dir, file_name or f"{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
+    if pdf_link:  # If a direct PDF link is available, try downloading it first
         if downloaded_pdf := download_pdf_link(pdf_link, pdf_filepath):
             return downloaded_pdf
-    
+
     # Get the Unpaywall JSON response
     if not (upaywall := _unpaywall_response_to_json(url)):
         log.debug(f"Failed to download the PDF for {str(doi)} with {str(url)}")
         return None
-    
+
     # See if there is a best location
     if bst_oa_loc := safe_dic(upaywall, "best_oa_location"):
         response = _try_all_location_urls(bst_oa_loc)
@@ -56,12 +59,12 @@ def doi_to_downloaded_pdf(url, doi, pdf_link, output_dir):
             pdf = try_other_locations(upaywall)
     else:
         pdf = try_other_locations(upaywall)
-    
+
     # Check if no PDF has been found
     if not pdf:
         log.debug(f"Failed to download the PDF for {str(doi)} with {str(url)}")
         return None
-    
+
     # Save the downloaded PDF
     try:
         with open(pdf_filepath, 'wb') as f:
@@ -69,7 +72,8 @@ def doi_to_downloaded_pdf(url, doi, pdf_link, output_dir):
             log.info('PDF written successfully from Unpaywall')
         return pdf_filepath
     except Exception as e:
-        log.error(f"Exception! Failed to save the PDF for {str(doi)} with {str(url)}, {str(e)}")
+        log.error(
+            f"Exception! Failed to save the PDF for {str(doi)} with {str(url)}, {str(e)}")
         return None
 
 
@@ -104,12 +108,12 @@ def _try_all_location_urls(location: dict):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
     }
-    if url := safe_dic(location,"url_for_pdf"):
-        response = requests.get(url, headers= headers)
+    if url := safe_dic(location, "url_for_pdf"):
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return response
     if url := safe_dic(location, "url"):
-        response = requests.get(url, headers= headers)
+        response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return response
     return None
@@ -173,7 +177,6 @@ def _html_resp_to_pdf_binary_from_direct_link(soup_obj, html_url):
                 except requests.RequestException:
                     continue
 
-
         # If no PDF link is found, return None
         return None
 
@@ -198,7 +201,7 @@ def _doi_to_pdf_name(doi: str):
     else:
         # characters within doi that is allowed -._;()/
         name = doi.replace('http://doi.org/', '').replace('https://doi.org/', '') \
-                   .replace('/', '%').replace('.', '!') + '.pdf'
+            .replace('/', '%').replace('.', '!') + '.pdf'
         return name
 
 
@@ -210,13 +213,24 @@ def _unpaywall_response_to_json(url: str):
     """
     try:
         r = requests.get(url)
+        log.debug("Unpaywall response status code: " + str(r.status_code))
+        log.debug("Unpaywall response: " + r.text)
+        
+        if r.status_code == 404:
+            log.debug(f"Unpaywall URL not found: {url}")
+            return None
+
+        r.raise_for_status()  # Raise an error for other bad responses (4xx, 5xx)
+
         idk = str(r.content)
         idk = idk[2:-1]
         idk = idk.replace('\\', '')
         json_idk = json.loads(idk)
         return json_idk
+
     except Exception as e:
-        log.error(f"Failed to download the PDF: Issue while trying to get the unpaywall response {str(e)}")
+        log.error(
+            f"Failed to download the PDF: Issue while trying to get the unpaywall response {str(e)}")
         return None
 
 
