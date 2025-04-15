@@ -10,7 +10,8 @@ from ..object_creator.implementation_url import ImplementationUrl
 
 log = logging.getLogger(__name__)
 
-def downloaded_to_paperObj(downloadedObj, paper_meta = None):
+
+def downloaded_to_paperObj(downloadedObj, paper_meta=None):
     """
     :param: downloadedObj
     ---
@@ -26,18 +27,19 @@ def downloaded_to_paperObj(downloadedObj, paper_meta = None):
         publication_date = paper_meta.publication_date if paper_meta else None
         authors = paper_meta.authors if paper_meta else None
 
+
         return PaperObj(
-            title=title, 
-            doi=doi, 
-            arxiv=arxiv, 
-            publication_date=publication_date, 
+            title=title,
+            doi=doi,
+            arxiv=arxiv,
+            publication_date=publication_date,
             authors=authors,
             file_name=None,
             file_path=None,
             implementation_urls=[],
             abstract=None
         )
-    
+
     try:
         # TODO optimise
         raw_pdf_data = raw_read_pdf(pdf_path=downloadedObj.file_path)
@@ -46,9 +48,10 @@ def downloaded_to_paperObj(downloadedObj, paper_meta = None):
         if urls_dict:
             for url_type, url_list in urls_dict.items():
                 for url in url_list:
-                    extraction_method = ExtractionMethod(type="regex", location="", location_type="", source="", source_paragraph="")
+                    extraction_method = ExtractionMethod(
+                        type="regex", location="", location_type="", source="", source_paragraph="")
                     implementation_url = ImplementationUrl(identifier=url['url'], type=url_type, paper_frequency=url['#_appearances'], extraction_methods=[extraction_method]
-                    )
+                                                           )
                     urls.append(implementation_url.to_dict())
         abstract = get_possible_abstract(pdf_data_list)
         title = downloadedObj.title
@@ -60,15 +63,15 @@ def downloaded_to_paperObj(downloadedObj, paper_meta = None):
         file_path = downloadedObj.file_path
         pdf_link = downloadedObj.pdf_link
         return PaperObj(
-            title=title, 
-            implementation_urls=urls, 
-            doi=doi, 
-            arxiv=arxiv, 
-            abstract=abstract, 
-            publication_date=publication_date, 
-            authors=authors, 
-            file_name=file_name, 
-            file_path=file_path, 
+            title=title,
+            implementation_urls=urls,
+            doi=doi,
+            arxiv=arxiv,
+            abstract=abstract,
+            publication_date=publication_date,
+            authors=authors,
+            file_name=file_name,
+            file_path=file_path,
             pdf_link=pdf_link
         )
     except Exception as e:
@@ -80,25 +83,25 @@ def dwnldd_obj_to_paper_dic(downloaded_obj):
     return paperObj_ppDict(paper=paper)
 
 
-def dwnldd_obj_to_paper_json(download_obj,output_dir):
+def dwnldd_obj_to_paper_json(download_obj, output_dir):
     pp_dic = dwnldd_obj_to_paper_dic(download_obj)
     return pp_dic_to_json(pp_dic, output_dir)
 
 
 def dwnlddDic_to_paper_dic(downloadeds_dic, output_path):
     count = 0
-    for index, obj  in enumerate(downloadeds_dic):
+    for index, obj in enumerate(downloadeds_dic):
         dwnObj = downloadedDic_to_downloadedObj(obj)
         paper = downloaded_to_paperObj(dwnObj)
         count += 1
         print("Processed %s, \n Total Processed: %s Papers" % (index, count))
-        save_dict_to_json(paper.to_dict(),output_path)
+        save_dict_to_json(paper.to_dict(), output_path)
     return output_path
 
 
-def dwnlddDic_to_paperJson(downloadeds_dic,output_dir):
+def dwnlddDic_to_paperJson(downloadeds_dic, output_dir):
     pp_dic = dwnlddDic_to_paper_dic(downloadeds_dic)
-    return pp_dic_to_json(pp_dic,output_dir)
+    return pp_dic_to_json(pp_dic, output_dir)
 
 
 def dwnlddJson_to_paper_dic(dwnldd_json, output_dir):
@@ -113,7 +116,7 @@ def dwnlddJson_to_paper_dic(dwnldd_json, output_dir):
             dwnldd_json = json.load(f)
     except Exception as e:
         print(str(e) + "Error while opening metadata json")
-    output_path = os.path.join(output_dir,"processed_metadata.json")
+    output_path = os.path.join(output_dir, "processed_metadata.json")
     return dwnlddDic_to_paper_dic(dwnldd_json, output_path)
 
 
@@ -136,7 +139,7 @@ def pp_dic_to_json(pp_dic, output_dir):
     :return
     Path to the json
     """
-    output_path = os.path.join(output_dir,"processed_metadata.json")
+    output_path = os.path.join(output_dir, "processed_metadata.json")
     with open(output_path, 'w+') as out_file:
         json.dump(pp_dic, out_file, sort_keys=True, indent=4,
                   ensure_ascii=False)
@@ -153,7 +156,8 @@ def paperObj_ppDict(paper):
     try:
         if paper is not None:
             if paper.doi is None:
-                log.warning(f"This paper does not have a doi, created a fake ID for {paper.title}")
+                log.warning(
+                    f"This paper does not have a doi, created a fake ID for {paper.title}")
                 paper.doi = BACKUP_ID
                 ans = {str(BACKUP_ID): paper.to_dict()}
                 BACKUP_ID += 1
@@ -163,11 +167,12 @@ def paperObj_ppDict(paper):
             log.info("paper is None; cannot process.")
             return None
     except Exception as e:
-        log.error("An error occurred while processing paper with DOI %s: %s", paper.doi, str(e))
+        log.error(
+            "An error occurred while processing paper with DOI %s: %s", paper.doi, str(e))
+
 
 def safe_dic(dic, key):
     try:
         return dic[key]
     except:
         return None
-

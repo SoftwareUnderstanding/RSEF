@@ -29,7 +29,7 @@ def pdf_download_pipeline(id, output_directory, pdf_link):
     except Exception as e:
         log.error(f"Error while trying to create the directory Err @ PDF download {str(e)}")
 
-    log.debug(f"Attempting to download pdf for {str(id)}")
+    log.debug(f"Attempting to download pdf for {str(id) if id else str(pdf_link)}")
     if (file_path := download_arxiv_pdf(id, pdf_output_directory) and id):
         return file_path
     else:

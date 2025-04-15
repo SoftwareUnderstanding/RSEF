@@ -39,8 +39,10 @@ def pdfDoi_to_downloaded(doi,file_path):
         authorships, authors = safe_dic(oa_meta, "authorships"), []
         for author in authorships:
             authors.append(safe_dic(safe_dic(author, "author"), "display_name"))
+
+        pdf_link = safe_dic(oa_meta, "primary_location")["pdf_url"]
             
-        return DownloadedObj(titL, doi, arxiv, publication_date, authors, file_name, file_path)
+        return DownloadedObj(titL, doi, arxiv, publication_date, authors, file_name, file_path, pdf_link)
     except Exception as e:
         print(str(e))
 
