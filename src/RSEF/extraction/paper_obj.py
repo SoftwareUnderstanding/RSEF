@@ -186,7 +186,7 @@ class PaperObj:
             'arxiv': self._arxiv,
             'abstract': self._abstract,
             'publication_date': self.publication_date,
-            'authors': ", ".join(self.authors) if self.authors else "",
+            'authors': None if self.authors is None else (", ".join(self.authors) if isinstance(self.authors, list) else self.authors),
             'file_name': self._file_name,
             'file_path': self._file_path,
             'pdf_link': self.pdf_link

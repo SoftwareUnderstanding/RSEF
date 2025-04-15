@@ -94,7 +94,7 @@ def dwnlddDic_to_paper_dic(downloadeds_dic, output_path):
         dwnObj = downloadedDic_to_downloadedObj(obj)
         paper = downloaded_to_paperObj(dwnObj)
         count += 1
-        print("Processed %s, \n Total Processed: %s Papers" % (index, count))
+        log.info(f"Processed {index}, Total Processed: {count} Papers")
         save_dict_to_json(paper.to_dict(), output_path)
     return output_path
 

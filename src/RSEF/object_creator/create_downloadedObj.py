@@ -231,7 +231,7 @@ def doi_to_downloadedJson(doi, output_dir):
     dict = doi_to_downloadedDic(doi, output_dir)
     output_path = output_dir + DOWNLOADED_PATH
     with open(output_path, 'w+') as out_file:
-        json.dump(dict, out_file, sort_keys=True, indent=4,
+        json.dump([dict], out_file, sort_keys=True, indent=4,
                   ensure_ascii=False)
     return output_path
 
@@ -422,9 +422,9 @@ def save_dict_to_json(obj, json_path):
         with open(json_path, 'w', encoding='utf-8', errors='ignore') as file:
             json.dump(json_data, file, indent=4, ensure_ascii=False)
 
-        log.info("Data successfully appended to file:", json_path)
+        log.info(f"Data successfully appended to file: {json_path}")
     except Exception as e:
-        log.error("Error appending JSON data to file:", e)
+        log.error(f"Error appending JSON data to file: {e}")
 
 
 def remove_empty_fields_from_file(file_path):
